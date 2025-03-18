@@ -294,3 +294,17 @@ extension Blueutil {
     }
 }
 
+func listDevices(_ devices: [IOBluetoothDevice], detailed: Bool) {
+    if devices.isEmpty {
+        print("No devices found.")
+        return
+    }
+    for device in devices {
+        print(
+            "Address: \(device.addressString ?? "-"), Name: \(device.nameOrAddress ?? "-"), Connected: \(device.isConnected())"
+        )
+        if detailed {
+            // Add more detailed information retrieval here
+        }
+    }
+}
