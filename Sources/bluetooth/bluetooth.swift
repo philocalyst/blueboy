@@ -308,3 +308,9 @@ func listDevices(_ devices: [IOBluetoothDevice], detailed: Bool) {
         }
     }
 }
+
+enum BluetoothError: Error {
+    case invalidIdentifier(identifier: String)
+    case deviceNotFound(identifier: String)
+}
+
