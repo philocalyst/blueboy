@@ -314,3 +314,29 @@ enum BluetoothError: Error {
     case deviceNotFound(identifier: String)
 }
 
+func getDevice(identifier: String) throws -> IOBluetoothDevice {
+    if isValidID(arg: identifier) {
+        guard let device = IOBluetoothDevice(addressString: identifier) else {
+            throw BluetoothError.deviceNotFound(identifier: identifier)
+        }
+        return device
+    } else {
+        throw BluetoothError.invalidIdentifier(identifier: identifier)
+    }
+    // else {
+    // Not a valid id, use name instead.
+    // let searchDevices =
+    //     IOBluetoothDevice.pairedDevices()
+
+    // let foundDevices = searchDevices.filter { device in
+    //     return device == identifier
+    // }
+
+    // // Return the first matching device, or throw an error if none are found.
+    // guard let device = foundDevices.first else {
+    //     throw BluetoothError.deviceNotFound(identifier: identifier)
+    // }
+    // return device
+    // }
+}
+
