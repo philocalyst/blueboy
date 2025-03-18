@@ -249,3 +249,14 @@ extension Blueutil {
         }
     }
 
+    struct Get: ParsableCommand {
+        @Flag(
+            name: [.short, .customLong("discoverable")], help: "Output discoverable state as 1 or 0"
+        )
+        var discoverableStateOutput: Bool = false
+
+        @Flag(name: [.short, .customLong("power")], help: "Output power status as 1 or 0")
+        var powerStateOutput: Bool = false
+
+    }
+
