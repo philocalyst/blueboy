@@ -60,3 +60,18 @@ struct Blueutil: ParsableCommand {
             List.self,
         ]
     )
+
+    @Option(name: .customLong("format"), help: "Change output format")
+    var format: Format?
+
+    mutating func run() throws {
+        if let formatOption = format {
+            // Logic for format when no other command is given
+            print("Setting format to \(formatOption)")
+        } else {
+            // Default behavior: output current state
+            print("Outputting current Bluetooth state...")
+        }
+    }
+}
+
