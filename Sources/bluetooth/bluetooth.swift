@@ -112,6 +112,18 @@ extension Blueutil {
                 print("Listing recent devices (count: \(count))...")
             } else if connected {
                 // Logic to list connected devices
+                let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice]
+                var connectedDevices = [IOBluetoothDevice]()
+
+                if let pairedDevices = pairedDevices {  // Safely unwrap the optional
+                    for device in pairedDevices {
+                        if device.isConnected() {
+                            connectedDevices.append(device)
+                        }
+                    }
+                }
+
+                listDevices(connectedDevices, detailed: false)
                 print("Listing connected devices...")
             }
         }
