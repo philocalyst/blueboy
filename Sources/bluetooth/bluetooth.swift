@@ -75,3 +75,44 @@ struct Blueutil: ParsableCommand {
     }
 }
 
+extension Blueutil {
+    struct List: ParsableCommand {
+        @Flag(help: "List favorite devices")
+        var favorites: Bool = false
+
+        @Option(help: "Inquiry devices in range, duration in seconds (default 10)")
+        var inquiry: Int?
+
+        @Flag(help: "List paired devices")
+        var paired: Bool = false
+
+        @Option(help: "List recently used devices, default 10, 0 to list all")
+        var recent: Int?
+
+        @Flag(help: "List connected devices")
+        var connected: Bool = false
+
+        mutating func run() throws {
+            if favorites {
+                // Logic to list favorites
+                print("Listing favorites...")
+            } else if let duration = inquiry {
+                // Logic for inquiry
+                print("Inquiring for \(duration) seconds...")
+            } else if paired {
+                if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
+                    listDevices(pairedDevices, detailed: false)  // Assuming you have a listDevices function in Swift
+                } else {
+                    print("Could not retrieve paired devices.")
+                }
+                // Logic to list paired devices
+                print("Listing paired devices...")
+            } else if let count = recent {
+                // Logic to list recent devices
+                print("Listing recent devices (count: \(count))...")
+            } else if connected {
+                // Logic to list connected devices
+                print("Listing connected devices...")
+            }
+        }
+    }
