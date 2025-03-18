@@ -18,3 +18,31 @@ class DeviceNotificationRunLoopStopper: NSObject {
         }
     }
 }
+
+enum State: String, CaseIterable, ExpressibleByArgument {
+    case on, off, toggle
+    case one = "1"
+    case zero = "0"
+}
+
+enum Format: String, CaseIterable, ExpressibleByArgument {
+    case `default`
+    case newDefault = "new-default"
+    case json
+    case jsonPretty = "json-pretty"
+}
+
+enum Operation: String, CaseIterable, ExpressibleByArgument {
+    case gt = ">"
+    case ge = ">="
+    case lt = "<"
+    case le = "<="
+    case eq = "="
+    case ne = "!="
+    case greaterThan = "gt"
+    case greaterThanOrEqual = "ge"
+    case lessThan = "lt"
+    case lessThanOrEqual = "le"
+    case equal = "eq"
+    case notEqual = "ne"
+}
