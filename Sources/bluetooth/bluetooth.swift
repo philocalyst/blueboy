@@ -340,3 +340,18 @@ func getDevice(identifier: String) throws -> IOBluetoothDevice {
     // }
 }
 
+func isValidID(arg: String) -> Bool {
+    let regexPattern = "^[0-9a-f]{2}([0-9a-f]{10}|(-[0-9a-f]{2}){5}|(:[0-9a-f]{2}){5})$"
+    do {
+        let regex = try NSRegularExpression(pattern: regexPattern, options: [.caseInsensitive])
+        let range = NSRange(location: 0, length: arg.utf16.count)
+        if regex.firstMatch(in: arg, range: range) != nil {
+            return true
+        } else {
+            return false
+        }
+    } catch {
+        print("Error creating regex: \(error)")
+        return false  // Or handle the error as appropriate for your application
+    }
+}
