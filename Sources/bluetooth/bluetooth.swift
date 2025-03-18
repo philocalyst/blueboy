@@ -46,3 +46,17 @@ enum Operation: String, CaseIterable, ExpressibleByArgument {
     case equal = "eq"
     case notEqual = "ne"
 }
+
+@main
+struct Blueutil: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "A command-line utility for controlling Bluetooth on macOS.",
+        version: "2.12.0",
+        subcommands: [
+            Device.self,
+            Wait.self,
+            Set.self,
+            Get.self,
+            List.self,
+        ]
+    )
