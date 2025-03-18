@@ -260,3 +260,20 @@ extension Blueutil {
 
     }
 
+    struct Set: ParsableCommand {
+        @Option(name: [.short, .customLong("power")], help: "set power state")
+        var powerState: State?
+
+        @Option(name: [.short, .customLong("discoverable")], help: "set discoverable state")
+        var discoverableState: State?
+
+        mutating func run() throws {
+            if let state = powerState {
+                // Logic to set power state
+                print("Setting power state to \(state)")
+            } else if let state = discoverableState {
+                // Logic to set discoverable state
+                print("Setting discoverable state to \(state)")
+            }
+        }
+    }
