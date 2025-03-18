@@ -313,7 +313,7 @@ func listDevices(_ devices: [IOBluetoothDevice], detailed: Bool) {
     }
     for device in devices {
         print(
-            "Address: \(device.addressString ?? "-"), Name: \(device.nameOrAddress ?? "-"), Connected: \(device.isConnected())"
+            "Address: \(device.addressString ?? "-"), Name: \(device.nameOrAddress ?? "-"), Connected: \(device.isConnected() ? "Yes (\(device.rawRSSI()) dbm)" : "No")"
         )
         if detailed {
             // Add more detailed information retrieval here
