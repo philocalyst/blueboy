@@ -277,3 +277,20 @@ extension Blueutil {
             }
         }
     }
+
+    struct Wait: ParsableCommand {
+
+        @Argument(help: "Device ID (address or name)")
+        var id: String
+
+        @Option(name: .customLong("wait-connect"), help: "EXPERIMENTAL wait for device to connect")
+        var waitConnect: Int?
+
+        @Option(
+            name: .customLong("wait-disconnect"), help: "EXPERIMENTAL wait for device to disconnect"
+        )
+        var waitDisconnect: Int?
+
+    }
+}
+
