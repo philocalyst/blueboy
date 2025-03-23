@@ -248,6 +248,7 @@ extension Blueutil {
         static let configuration = CommandConfiguration(
             abstract: "List Bluetooth devices"
         )
+
         @Flag(help: "List favorite devices")
         var favorites: Bool = false
 
@@ -262,6 +263,9 @@ extension Blueutil {
 
         @Flag(help: "List connected devices")
         var connected: Bool = false
+
+        @Option(name: .customLong("format"), help: "Change output format")
+        var format: Format?
 
         mutating func run() throws {
             if favorites {
