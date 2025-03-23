@@ -268,13 +268,15 @@ extension Blueutil {
         var format: Format?
 
         mutating func run() throws {
+            logger.info("Running List command")
+
             if favorites {
-                // Logic to list favorites
-                print("Listing favorites...")
+                logger.info("Listing favorite devices")
             } else if let duration = inquiry {
-                // Logic for inquiry
+                logger.info("Inquiring for \(duration) seconds")
                 print("Inquiring for \(duration) seconds...")
             } else if paired {
+                logger.info("Listing paired devices")
                 if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
                     listDevices(pairedDevices, detailed: false)  // Assuming you have a listDevices function in Swift
                 } else {
@@ -283,12 +285,9 @@ extension Blueutil {
                 // Logic to list paired devices
                 print("Listing paired devices...")
             } else if let count = recent {
-                // Logic to list recent devices
-                print("Listing recent devices (count: \(count))...")
+                logger.info("Listing \(count) recent devices")
             } else if connected {
-                // Logic to list connected devices
-                let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice]
-                var connectedDevices = [IOBluetoothDevice]()
+                logger.info("Listing connected devices")
 
                 if let pairedDevices = pairedDevices {  // Safely unwrap the optional
                     for device in pairedDevices {
