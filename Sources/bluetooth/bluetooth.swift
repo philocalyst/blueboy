@@ -221,7 +221,7 @@ struct Blueutil: ParsableCommand {
         version: "2.12.0",
         subcommands: [
             Device.self,
-            Wait.self,
+            // Wait.self,
             Set.self,
             Get.self,
             List.self,
@@ -583,54 +583,54 @@ extension Blueutil {
     }
 }
 
-// MARK: - Wait Command
-extension Blueutil {
-    struct Wait: ParsableCommand {
-        static let configuration = CommandConfiguration(
-            abstract: "Wait for device connection or disconnection"
-        )
+// // MARK: - Wait Command
+// extension Blueutil {
+//     struct Wait: ParsableCommand {
+//         static let configuration = CommandConfiguration(
+//             abstract: "Wait for device connection or disconnection"
+//         )
 
-        @Argument(help: "Device ID (address or name)")
-        var id: String
+//         @Argument(help: "Device ID (address or name)")
+//         var id: String
 
-        @Option(
-            name: .customLong("wait-connect"),
-            help: "EXPERIMENTAL wait for device to connect (timeout in seconds)")
-        var waitConnect: Int?
+//         @Option(
+//             name: .customLong("wait-connect"),
+//             help: "EXPERIMENTAL wait for device to connect (timeout in seconds)")
+//         var waitConnect: Int?
 
-        @Option(
-            name: .customLong("wait-disconnect"),
-            help: "EXPERIMENTAL wait for device to disconnect (timeout in seconds)")
-        var waitDisconnect: Int?
+//         @Option(
+//             name: .customLong("wait-disconnect"),
+//             help: "EXPERIMENTAL wait for device to disconnect (timeout in seconds)")
+//         var waitDisconnect: Int?
 
-        mutating func run() throws {
-            if let timeout = waitConnect {
-                try waitForDeviceConnection(id, timeout: timeout)
-            } else if let timeout = waitDisconnect {
-                try waitForDeviceDisconnection(id, timeout: timeout)
-            } else {
-                logger.warning("No wait condition specified for device \(id)")
-                print("No wait condition specified for device \(id)")
-            }
-        }
+//         mutating func run() throws {
+//             if let timeout = waitConnect {
+//                 try waitForDeviceConnection(id, timeout: timeout)
+//             } else if let timeout = waitDisconnect {
+//                 try waitForDeviceDisconnection(id, timeout: timeout)
+//             } else {
+//                 logger.warning("No wait condition specified for device \(id)")
+//                 print("No wait condition specified for device \(id)")
+//             }
+//         }
 
-        private func waitForDeviceConnection(_ id: String, timeout: Int) throws {
-            logger.info("Waiting for device \(id) to connect (timeout: \(timeout)s)")
-            let device = try getDevice(identifier: id)
+//         private func waitForDeviceConnection(_ id: String, timeout: Int) throws {
+//             logger.info("Waiting for device \(id) to connect (timeout: \(timeout)s)")
+//             let device = try getDevice(identifier: id)
 
-            // TODO: Implementation for waiting for connection
-            print("Waiting for device \(id) to connect...")
-        }
+//             // TODO: Implementation for waiting for connection
+//             print("Waiting for device \(id) to connect...")
+//         }
 
-        private func waitForDeviceDisconnection(_ id: String, timeout: Int) throws {
-            logger.info("Waiting for device \(id) to disconnect (timeout: \(timeout)s)")
-            let device = try getDevice(identifier: id)
+//         private func waitForDeviceDisconnection(_ id: String, timeout: Int) throws {
+//             logger.info("Waiting for device \(id) to disconnect (timeout: \(timeout)s)")
+//             let device = try getDevice(identifier: id)
 
-            // TODO: Implementation for waiting for disconnection
-            print("Waiting for device \(id) to disconnect...")
-        }
-    }
-}
+//             // TODO: Implementation for waiting for disconnection
+//             print("Waiting for device \(id) to disconnect...")
+//         }
+//     }
+// }
 
 // MARK: - Set Command
 extension Blueutil {
