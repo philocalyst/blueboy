@@ -31,10 +31,19 @@ enum BluetoothError: Error, LocalizedError {
     }
 }
 
+// MARK: - Common Types
 enum State: String, CaseIterable, ExpressibleByArgument {
     case on, off, toggle
     case one = "1"
     case zero = "0"
+
+    var boolValue: Bool {
+        switch self {
+        case .on, .one: return true
+        case .off, .zero: return false
+        case .toggle: return false  // Toggle is handled separately
+        }
+    }
 }
 
 enum Format: String, CaseIterable, ExpressibleByArgument {
