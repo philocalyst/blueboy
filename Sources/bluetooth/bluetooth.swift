@@ -68,6 +68,31 @@ enum Operation: String, CaseIterable, ExpressibleByArgument {
     case notEqual = "ne"
 }
 
+// MARK: - Device Helpers
+struct DevicePrintOptions {
+    var showAddress: Bool
+    var showName: Bool
+    var showConnected: Bool
+    var showRSSI: Bool
+    var showPairing: Bool
+    var showIsIncoming: Bool
+    var showIsFavorite: Bool
+    var showRecentAccessDate: Bool
+
+    // Presets!!
+    static let all = DevicePrintOptions(
+        showAddress: true, showName: true, showConnected: true,
+        showRSSI: true, showPairing: true, showIsIncoming: true,
+        showIsFavorite: true, showRecentAccessDate: true
+    )
+
+    static let basic = DevicePrintOptions(
+        showAddress: true, showName: true, showConnected: true,
+        showRSSI: false, showPairing: false, showIsIncoming: false,
+        showIsFavorite: false, showRecentAccessDate: false
+    )
+}
+
 @main
 struct Blueutil: ParsableCommand {
     static let configuration = CommandConfiguration(
