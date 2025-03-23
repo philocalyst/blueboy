@@ -677,27 +677,50 @@ extension Blueutil {
 }
 
 // MARK: - Get Command
+extension Blueutil {
+    struct Get: ParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Get Bluetooth system states"
+        )
 
-    // // Return the first matching device, or throw an error if none are found.
-    // guard let device = foundDevices.first else {
-    //     throw BluetoothError.deviceNotFound(identifier: identifier)
-    // }
-    // return device
-    // }
-}
+        @Flag(
+            name: [.short, .customLong("discoverable")], help: "Output discoverable state as 1 or 0"
+        )
+        var discoverableStateOutput: Bool = false
 
-func isValidID(arg: String) -> Bool {
-    let regexPattern = "^[0-9a-f]{2}([0-9a-f]{10}|(-[0-9a-f]{2}){5}|(:[0-9a-f]{2}){5})$"
-    do {
-        let regex = try NSRegularExpression(pattern: regexPattern, options: [.caseInsensitive])
-        let range = NSRange(location: 0, length: arg.utf16.count)
-        if regex.firstMatch(in: arg, range: range) != nil {
-            return true
-        } else {
-            return false
+        @Flag(name: [.short, .customLong("power")], help: "Output power status as 1 or 0")
+        var powerStateOutput: Bool = false
+
+        @Option(name: .customLong("format"), help: "Change output format")
+        var format: Format?
+
+        mutating func run() throws {
+            if discoverableStateOutput {
+                try getDiscoverableState()
+            }
+
+            if powerStateOutput {
+                try getPowerState()
+            }
+
+            if !discoverableStateOutput && !powerStateOutput {
+                logger.warning("No state retrieval specified")
+                print("No state retrieval specified")
+            }
         }
-    } catch {
-        print("Error creating regex: \(error)")
-        return false  // Or handle the error as appropriate for your application
+
+        private func getDiscoverableState() throws {
+            logger.info("Getting discoverable state")
+            let host = IOBluetoothHostController.init()
+            // TODO: Implementation for getting discoverable state
+            print("1")  // Example output
+        }
+
+        private func getPowerState() throws {
+            logger.info("Getting power state")
+            let host = IOBluetoothHostController.init()
+            let power = host.powerState
+            print(power.rawValue)
+        }
     }
 }
