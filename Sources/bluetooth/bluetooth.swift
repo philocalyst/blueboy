@@ -632,12 +632,33 @@ extension Blueutil {
     }
 }
 
+// MARK: - Set Command
+extension Blueutil {
+    struct Set: ParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Set Bluetooth system states"
         )
-        if detailed {
-            // Add more detailed information retrieval here
+
+        @Option(name: [.short, .customLong("power")], help: "Set power state")
+        var powerState: State?
+
+        @Option(name: [.short, .customLong("discoverable")], help: "Set discoverable state")
+        var discoverableState: State?
+
+        mutating func run() throws {
+            if let state = powerState {
+                try setPowerState(state)
+            }
+
+            if let state = discoverableState {
+                try setDiscoverableState(state)
+            }
+
+            if powerState == nil && discoverableState == nil {
+                logger.warning("No state changes specified")
+                print("No state changes specified")
+            }
         }
-    }
-}
 
 enum BluetoothError: Error {
     case invalidIdentifier(identifier: String)
