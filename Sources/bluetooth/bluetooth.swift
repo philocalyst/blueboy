@@ -451,34 +451,137 @@ extension Blueutil {
             }
         }
 
-    struct Get: ParsableCommand {
-        @Flag(
-            name: [.short, .customLong("discoverable")], help: "Output discoverable state as 1 or 0"
-        )
-        var discoverableStateOutput: Bool = false
+        // Device command helper methods
+        private func showDeviceInfo(_ id: String) throws {
+            logger.info("Showing info for device \(id)")
+            let device = try getDevice(identifier: id)
+            print("Device Information:")
+            listDevices([device], options: DevicePrintOptions.all)
+        }
 
-        @Flag(name: [.short, .customLong("power")], help: "Output power status as 1 or 0")
-        var powerStateOutput: Bool = false
+        private func checkDeviceConnection(_ id: String) throws {
+            logger.info("Checking connection state for device \(id)")
+            let device = try getDevice(identifier: id)
+            print(device.isConnected() ? "1" : "0")
+        }
 
-    }
+        private func connectToDevice(_ id: String) throws {
+            logger.info("Connecting to device \(id)")
+            let device = try getDevice(identifier: id)
+            let result = device.openConnection()
 
-    struct Set: ParsableCommand {
-        @Option(name: [.short, .customLong("power")], help: "set power state")
-        var powerState: State?
+            if result != kIOReturnSuccess {
+                logger.error("Failed to connect to device \(id): \(result)")
+                throw BluetoothError.connectionFailed("Return code: \(result)")
+            }
 
-        @Option(name: [.short, .customLong("discoverable")], help: "set discoverable state")
-        var discoverableState: State?
+            print("Successfully connected to device \(id)")
+        }
 
-        mutating func run() throws {
-            if let state = powerState {
-                // Logic to set power state
-                print("Setting power state to \(state)")
-            } else if let state = discoverableState {
-                // Logic to set discoverable state
-                print("Setting discoverable state to \(state)")
+        private func disconnectFromDevice(_ id: String) throws {
+            logger.info("Disconnecting from device \(id)")
+            let device = try getDevice(identifier: id)
+
+            let stopper = DeviceNotificationRunLoopStopper(withExpectedDevice: device)
+            device.register(
+                forDisconnectNotification: stopper,
+                selector: #selector(DeviceNotificationRunLoopStopper.notification(_:fromDevice:))
+            )
+
+            let result = device.closeConnection()
+            if result != kIOReturnSuccess {
+                logger.error("Failed to disconnect from device \(id): \(result)")
+                throw BluetoothError.operationFailed("Return code: \(result)")
+            }
+
+            RunLoop.current.run()
+            print("Successfully disconnected from device \(id)")
+        }
+
+        private func pairWithDevice(_ id: String, pin: String?) throws {
+            logger.info("Pairing with device \(id) with PIN: \(pin ?? "no PIN provided")")
+            let device = try getDevice(identifier: id)
+
+            class BluetoothPairDelegate: NSObject, IOBluetoothDevicePairDelegate {
+                var requestedPin: Int = 0
+
+                // Implement required delegate methods
+                func devicePairingStarted(_ sender: IOBluetoothDevicePair) {
+                    logger.info("Pairing started")
+                }
+
+                func devicePairingFinished(_ sender: IOBluetoothDevicePair, error: IOReturn) {
+                    logger.info("Pairing finished with status: \(error)")
+                    CFRunLoopStop(RunLoop.current.getCFRunLoop())
+
+                }
+
+                func devicePairingPINCodeRequest(_ sender: IOBluetoothDevicePair) {
+                    // if requestedPin > 0 {
+                    //     sender.replyPINCode(withNumber: requestedPin)
+                    // }
+                }
+            }
+
+            let delegate = BluetoothPairDelegate()
+            guard let pairer = IOBluetoothDevicePair(device: device) else {
+                logger.error("Failed to create pairing object for device \(id)")
+                throw BluetoothError.operationFailed("Could not create pairing object")
+            }
+
+            pairer.delegate = delegate
+
+            if let pinString = pin, let pinValue = Int(pinString) {
+                delegate.requestedPin = pinValue
+            }
+
+            if pairer.start() != kIOReturnSuccess {
+                logger.error("Failed to start pairing with device \(id)")
+                throw BluetoothError.operationFailed("Failed to start pairing process")
+            }
+
+            RunLoop.current.run()
+            pairer.stop()
+
+            if !device.isPaired() {
+                logger.error("Failed to pair with device \(id)")
+                throw BluetoothError.operationFailed(
+                    "Device is not paired after the pairing process")
+            }
+
+            print("Successfully paired with device \(id)")
+        }
+
+        private func unpairDevice(_ id: String) throws {
+            logger.info("Unpairing device \(id)")
+            let device = try getDevice(identifier: id)
+            let removeSelector = NSSelectorFromString("remove")
+
+            if device.responds(to: removeSelector) {
+                device.perform(removeSelector)
+                device.closeConnection()
+                print("Successfully unpaired device \(id)")
+            } else {
+                logger.error("Device \(id) does not support unpair operation")
+                throw BluetoothError.operationFailed("Device does not support unpair operation")
             }
         }
+
+        private func addDeviceToFavorites(_ id: String) throws {
+            logger.info("Adding device \(id) to favorites")
+            let device = try getDevice(identifier: id)
+            // TODO: Implementation for adding to favorites
+            print("Added device \(id) to favorites")
+        }
+
+        private func removeDeviceFromFavorites(_ id: String) throws {
+            logger.info("Removing device \(id) from favorites")
+            let device = try getDevice(identifier: id)
+            // TODO: Implementation for removing from favorites
+            print("Removed device \(id) from favorites")
+        }
     }
+}
 
     struct Wait: ParsableCommand {
 
