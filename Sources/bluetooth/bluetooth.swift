@@ -141,6 +141,18 @@ func getDevice(identifier: String) throws -> IOBluetoothDevice {
     }
 }
 
+func isValidBluetoothID(arg: String) -> Bool {
+    let regexPattern = "^[0-9a-f]{2}([0-9a-f]{10}|(-[0-9a-f]{2}){5}|(:[0-9a-f]{2}){5})$"
+    do {
+        let regex = try NSRegularExpression(pattern: regexPattern, options: [.caseInsensitive])
+        let range = NSRange(location: 0, length: arg.utf16.count)
+        return regex.firstMatch(in: arg, range: range) != nil
+    } catch {
+        logger.error("Error creating regex: \(error)")
+        return false
+    }
+}
+
 @main
 struct Blueutil: ParsableCommand {
     static let configuration = CommandConfiguration(
