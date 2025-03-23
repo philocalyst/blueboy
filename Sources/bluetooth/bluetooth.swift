@@ -118,6 +118,29 @@ class DeviceInquiryRunLoopStopper: NSObject, CBPeripheralDelegate {
     }
 }
 
+// MARK: - Device Management Functions
+func getDevice(identifier: String) throws -> IOBluetoothDevice {
+    if isValidBluetoothID(arg: identifier) {
+        guard let device = IOBluetoothDevice(addressString: identifier) else {
+            logger.error("Device not found with identifier: \(identifier)")
+            throw BluetoothError.deviceNotFound(identifier: identifier)
+        }
+        return device
+    } else {
+        // If no identifer provided, move to start checking for a matched name in the list
+        if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
+            for device in pairedDevices {
+                if device.nameOrAddress == identifier {
+                    return device
+                }
+            }
+        }
+
+        logger.error("Invalid or not found device identifier: \(identifier)")
+        throw BluetoothError.invalidIdentifier(identifier: identifier)
+    }
+}
+
 @main
 struct Blueutil: ParsableCommand {
     static let configuration = CommandConfiguration(
