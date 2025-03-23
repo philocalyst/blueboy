@@ -660,28 +660,23 @@ extension Blueutil {
             }
         }
 
-enum BluetoothError: Error {
-    case invalidIdentifier(identifier: String)
-    case deviceNotFound(identifier: String)
+        private func setPowerState(_ state: State) throws {
+            logger.info("Setting power state to \(state)")
+            let host = IOBluetoothHostController.init()
+            var power = host.powerState
+            print(power)
+            print("Setting power state to \(state)")
+        }
+
+        private func setDiscoverableState(_ state: State) throws {
+            logger.info("Setting discoverable state to \(state)")
+            // Implementation for setting discoverable state
+            print("Setting discoverable state to \(state)")
+        }
+    }
 }
 
-func getDevice(identifier: String) throws -> IOBluetoothDevice {
-    if isValidID(arg: identifier) {
-        guard let device = IOBluetoothDevice(addressString: identifier) else {
-            throw BluetoothError.deviceNotFound(identifier: identifier)
-        }
-        return device
-    } else {
-        throw BluetoothError.invalidIdentifier(identifier: identifier)
-    }
-    // else {
-    // Not a valid id, use name instead.
-    // let searchDevices =
-    //     IOBluetoothDevice.pairedDevices()
-
-    // let foundDevices = searchDevices.filter { device in
-    //     return device == identifier
-    // }
+// MARK: - Get Command
 
     // // Return the first matching device, or throw an error if none are found.
     // guard let device = foundDevices.first else {
