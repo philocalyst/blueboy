@@ -621,6 +621,7 @@ extension Blueutil {
             // TODO: Implementation for waiting for connection
             print("Waiting for device \(id) to connect...")
         }
+
         private func waitForDeviceDisconnection(_ id: String, timeout: Int) throws {
             logger.info("Waiting for device \(id) to disconnect (timeout: \(timeout)s)")
             let device = try getDevice(identifier: id)
@@ -631,14 +632,6 @@ extension Blueutil {
     }
 }
 
-func listDevices(_ devices: [IOBluetoothDevice], detailed: Bool) {
-    if devices.isEmpty {
-        print("No devices found.")
-        return
-    }
-    for device in devices {
-        print(
-            "Address: \(device.addressString ?? "-"), Name: \(device.nameOrAddress ?? "-"), Connected: \(device.isConnected() ? "Yes (\(device.rawRSSI()) dbm)" : "No")"
         )
         if detailed {
             // Add more detailed information retrieval here
