@@ -1,6 +1,9 @@
 import ArgumentParser
+import CoreBluetooth
+import CoreFoundation
 import Foundation
-import IOBluetooth
+@preconcurrency import IOBluetooth
+import Logging
 
 class DeviceNotificationRunLoopStopper: NSObject {
     private var expectedDevice: IOBluetoothDevice?
