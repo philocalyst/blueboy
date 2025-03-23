@@ -270,30 +270,65 @@ extension Blueutil {
         mutating func run() throws {
             logger.info("Running List command")
 
+            // Default options for device printing
+            var printOptions = DevicePrintOptions(
+                showAddress: true,
+                showName: true,
+                showConnected: true,
+                showRSSI: true,
+                showPairing: true,
+                showIsIncoming: true,
+                showIsFavorite: false,
+                showRecentAccessDate: true
+            )
+
             if favorites {
                 logger.info("Listing favorite devices")
+                if let favoriteDevices = IOBluetoothDevice.favoriteDevices() as? [IOBluetoothDevice]
+                {
+                    listDevices(favoriteDevices, options: printOptions)
+                } else {
+                    print("Could not retrieve favorite devices.")
+                }
             } else if let duration = inquiry {
                 logger.info("Inquiring for \(duration) seconds")
+                let devices = try getDevicesInRange(duration: Double(duration))
+                listDevices(devices, options: printOptions)
                 print("Inquiring for \(duration) seconds...")
+                // TODO: Implementation for device inquiry
             } else if paired {
                 logger.info("Listing paired devices")
                 if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
-                    listDevices(pairedDevices, detailed: false)  // Assuming you have a listDevices function in Swift
+                    printOptions.showPairing = false
+                    listDevices(pairedDevices, options: printOptions)
                 } else {
                     print("Could not retrieve paired devices.")
                 }
-                // Logic to list paired devices
-                print("Listing paired devices...")
             } else if let count = recent {
                 logger.info("Listing \(count) recent devices")
+                if let recentDevices = IOBluetoothDevice.recentDevices(UInt(count))
+                    as? [IOBluetoothDevice]
+                {
+                    listDevices(recentDevices, options: printOptions)
+                } else {
+                    print("Could not retrieve recent devices.")
+                }
             } else if connected {
                 logger.info("Listing connected devices")
+                let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] ?? []
+                printOptions.showConnected = false
+                let connectedDevices = pairedDevices.filter { $0.isConnected() }
 
-                if let pairedDevices = pairedDevices {  // Safely unwrap the optional
-                    for device in pairedDevices {
-                        if device.isConnected() {
-                            connectedDevices.append(device)
-                        }
+                listDevices(connectedDevices, options: printOptions)
+            } else {
+                logger.info("No specific list option selected, showing paired devices")
+                if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
+                    listDevices(pairedDevices, options: printOptions)
+                } else {
+                    print("Could not retrieve paired devices.")
+                }
+            }
+        }
                     }
                 }
 
