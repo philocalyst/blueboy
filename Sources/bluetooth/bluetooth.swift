@@ -329,14 +329,56 @@ extension Blueutil {
                 }
             }
         }
+        private func getDevicesInRange(duration: Double) throws -> [IOBluetoothDevice] {
+            try autoreleasepool {
+                class DeviceInquiryRunLoopStopper: NSObject, IOBluetoothDeviceInquiryDelegate {
+                    var isCompleted = false
+
+                    func deviceInquiryComplete(
+                        _ sender: IOBluetoothDeviceInquiry!, error: IOReturn, aborted: Bool
+                    ) {
+                        isCompleted = true
+                        CFRunLoopStop(CFRunLoopGetCurrent())
                     }
                 }
 
-                listDevices(connectedDevices, detailed: false)
-                print("Listing connected devices...")
+                let stopper = DeviceInquiryRunLoopStopper()
+                let inquirer = IOBluetoothDeviceInquiry(delegate: stopper)
+
+                inquirer?.inquiryLength = 10  // Length is in seconds
+                inquirer?.updateNewDeviceNames = true  // Retrival of found devices
+
+                let syncQueue = DispatchQueue(label: "com.bluetooth.inquiry.sync")
+
+                let result = inquirer?.start()
+                if result != kIOReturnSuccess {
+                    throw BluetoothError.deviceNotFound(identifier: "Failed to start inquiry")
+                }
+
+                let timer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { _ in
+                    syncQueue.sync {
+                        inquirer?.stop()
+                    }
+                }
+
+                // Add the timer to the current run loop
+                RunLoop.current.add(timer, forMode: .default)
+
+                // Run the loop until stopped by the delegate
+                while !stopper.isCompleted {
+                    RunLoop.current.run(mode: .default, before: Date.distantFuture)
+                }
+
+                if let foundDevices = inquirer?.foundDevices() as? [IOBluetoothDevice] {
+                    return foundDevices
+                }
+
+                throw BluetoothError.deviceNotFound(identifier: "No devices found")
             }
         }
     }
+}
+
     struct Device: ParsableCommand {
         static let configuration = CommandConfiguration(abstract: "Manage Bluetooth devices.")
 
