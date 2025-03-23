@@ -153,6 +153,66 @@ func isValidBluetoothID(arg: String) -> Bool {
     }
 }
 
+// Fully featured list devices func
+func listDevices(_ devices: [IOBluetoothDevice], options: DevicePrintOptions) {
+    if devices.isEmpty {
+        print("No devices found.")
+        return
+    }
+
+    for device in devices {
+        do {
+            var deviceInfo = [String]()
+
+            try autoreleasepool {
+                if options.showAddress, let addressString = device.addressString {
+                    deviceInfo.append("Address: \(addressString)")
+                }
+
+                if options.showName {
+                    let nameOrAddress = device.nameOrAddress ?? "-"
+                    deviceInfo.append("Name: \(nameOrAddress)")
+                }
+
+                if options.showConnected {
+                    let isConnected = device.isConnected()
+                    deviceInfo.append("Connected: \(isConnected ? "Yes" : "No")")
+                }
+
+                if options.showRSSI {
+                    deviceInfo.append("RSSI: \(device.rawRSSI()) dbm")
+                }
+
+                if options.showPairing {
+                    deviceInfo.append("Paired: \(device.isPaired() ? "Yes" : "No")")
+                }
+
+                if options.showIsIncoming {
+                    deviceInfo.append("Incoming: \(device.isIncoming() ? "Yes" : "No")")
+                }
+
+                if options.showIsFavorite {
+                    deviceInfo.append("Favorite: \(device.isFavorite() ? "Yes" : "No")")
+                }
+
+                if options.showRecentAccessDate, let recentAccessDate = device.recentAccessDate() {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = .medium
+                    dateFormatter.timeStyle = .short
+                    deviceInfo.append(
+                        "Last Accessed: \(dateFormatter.string(from: recentAccessDate))")
+                } else if options.showRecentAccessDate {
+                    deviceInfo.append("Last Accessed: Never")
+                }
+            }
+
+            print(deviceInfo.joined(separator: ", "))
+        } catch {
+            logger.error("Error processing device: \(error.localizedDescription)")
+        }
+    }
+}
+
 @main
 struct Blueutil: ParsableCommand {
     static let configuration = CommandConfiguration(
