@@ -111,6 +111,13 @@ class DeviceNotificationRunLoopStopper: NSObject {
     }
 }
 
+class DeviceInquiryRunLoopStopper: NSObject, CBPeripheralDelegate {
+    //Delegate method
+    func peripheralDidDiscoverServices(_ peripheral: CBPeripheral) {
+        CFRunLoopStop(RunLoop.current.getCFRunLoop())
+    }
+}
+
 @main
 struct Blueutil: ParsableCommand {
     static let configuration = CommandConfiguration(
