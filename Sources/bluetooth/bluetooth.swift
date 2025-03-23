@@ -621,6 +621,13 @@ extension Blueutil {
             // TODO: Implementation for waiting for connection
             print("Waiting for device \(id) to connect...")
         }
+        private func waitForDeviceDisconnection(_ id: String, timeout: Int) throws {
+            logger.info("Waiting for device \(id) to disconnect (timeout: \(timeout)s)")
+            let device = try getDevice(identifier: id)
+
+            // TODO: Implementation for waiting for disconnection
+            print("Waiting for device \(id) to disconnect...")
+        }
     }
 }
 
