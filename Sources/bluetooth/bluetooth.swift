@@ -213,6 +213,7 @@ func listDevices(_ devices: [IOBluetoothDevice], options: DevicePrintOptions) {
     }
 }
 
+// MARK: - Main Command
 @main
 struct Blueutil: ParsableCommand {
     static let configuration = CommandConfiguration(
@@ -232,10 +233,10 @@ struct Blueutil: ParsableCommand {
 
     mutating func run() throws {
         if let formatOption = format {
-            // Logic for format when no other command is given
+            logger.info("Setting format to \(formatOption)")
             print("Setting format to \(formatOption)")
         } else {
-            // Default behavior: output current state
+            logger.info("Outputting current Bluetooth state")
             print("Outputting current Bluetooth state...")
         }
     }
