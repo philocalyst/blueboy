@@ -93,6 +93,24 @@ struct DevicePrintOptions {
     )
 }
 
+// MARK: - Notification Helpers
+class DeviceNotificationRunLoopStopper: NSObject {
+    private var expectedDevice: IOBluetoothDevice
+
+    init(withExpectedDevice device: IOBluetoothDevice) {
+        self.expectedDevice = device
+    }
+
+    @objc func notification(
+        _ notification: IOBluetoothUserNotification, fromDevice device: IOBluetoothDevice
+    ) {
+        if expectedDevice == device {
+            notification.unregister()
+            CFRunLoopStop(RunLoop.current.getCFRunLoop())
+        }
+    }
+}
+
 @main
 struct Blueutil: ParsableCommand {
     static let configuration = CommandConfiguration(
