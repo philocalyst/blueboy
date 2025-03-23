@@ -583,19 +583,38 @@ extension Blueutil {
     }
 }
 
+// MARK: - Wait Command
+extension Blueutil {
     struct Wait: ParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Wait for device connection or disconnection"
+        )
 
         @Argument(help: "Device ID (address or name)")
         var id: String
 
-        @Option(name: .customLong("wait-connect"), help: "EXPERIMENTAL wait for device to connect")
+        @Option(
+            name: .customLong("wait-connect"),
+            help: "EXPERIMENTAL wait for device to connect (timeout in seconds)")
         var waitConnect: Int?
 
         @Option(
-            name: .customLong("wait-disconnect"), help: "EXPERIMENTAL wait for device to disconnect"
-        )
+            name: .customLong("wait-disconnect"),
+            help: "EXPERIMENTAL wait for device to disconnect (timeout in seconds)")
         var waitDisconnect: Int?
 
+        mutating func run() throws {
+            if let timeout = waitConnect {
+                try waitForDeviceConnection(id, timeout: timeout)
+            } else if let timeout = waitDisconnect {
+                try waitForDeviceDisconnection(id, timeout: timeout)
+            } else {
+                logger.warning("No wait condition specified for device \(id)")
+                print("No wait condition specified for device \(id)")
+            }
+        }
+
+        private func waitForDeviceConnection(_ id: String, timeout: Int) throws {
     }
 }
 
