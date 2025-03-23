@@ -379,8 +379,12 @@ extension Blueutil {
     }
 }
 
+// MARK: - Device Command
+extension Blueutil {
     struct Device: ParsableCommand {
-        static let configuration = CommandConfiguration(abstract: "Manage Bluetooth devices.")
+        static let configuration = CommandConfiguration(
+            abstract: "Manage Bluetooth devices"
+        )
 
         @Argument(help: "Device ID (address or name)")
         var id: String
@@ -401,7 +405,7 @@ extension Blueutil {
         var pair: Bool = false
 
         @Option(name: .customLong("pin"), help: "PIN for pairing (optional)")
-        var pin: String? = nil
+        var pin: String?
 
         @Flag(name: .customLong("unpair"), help: "EXPERIMENTAL unpair the device")
         var unpair: Bool = false
@@ -420,97 +424,32 @@ extension Blueutil {
         var format: Format?
 
         mutating func run() throws {
+            logger.info("Running Device command for ID: \(id)")
+
             if info {
-                // Logic to show device info
-                print("Showing info for device \(id)")
+                try showDeviceInfo(id)
             } else if isConnected {
-                // Logic to check connection state
-                print("Checking connection state for device \(id)")
+                try checkDeviceConnection(id)
             } else if connect {
-                // Logic to connect to device
-                do {
-                    let device = try getDevice(identifier: id)
-                    device.openConnection()
-                } catch {
-                    print("Error getting device: \(error)")
-                }
-                print("Pairing with device \(id) with PIN: \(pin ?? "no PIN provided")")
-
-                print("Connecting to device \(id)")
+                try connectToDevice(id)
             } else if disconnect {
-                // Logic to disconnect from device
-                do {
-                    let device = try getDevice(identifier: id)
-                    let stopper = DeviceNotificationRunLoopStopper.init(withExpectedDevice: device)
-                    device.register(
-                        forDisconnectNotification: stopper,
-                        selector: #selector(
-                            DeviceNotificationRunLoopStopper.notification(_:fromDevice:)))
-                    if device.closeConnection() != kIOReturnSuccess {
-                        print("failed")
-                    }
-                    CFRunLoopRun()
-                } catch {
-                    print("Error getting device: \(error)")
-                }
-                print("Disconnecting from device \(id)")
-
+                try disconnectFromDevice(id)
             } else if pair {
-                // Logic to pair with device
-                do {
-                    let device = try getDevice(identifier: id)
-                    class BluetoothPairDelegate: NSObject, IOBluetoothDevicePairDelegate {
-                        var requestedPin: Int = 0
-                    }
-                    let delegate = BluetoothPairDelegate()
-                    let pairer = IOBluetoothDevicePair(device: device)
-                    pairer?.delegate = delegate
-
-                    if let pinString = pin, let pinValue = Int(pinString) {
-                        delegate.requestedPin = pinValue
-                    }
-
-                    if pairer?.start() != kIOReturnSuccess {
-                        print("failed to start pairing")
-                    }
-                    CFRunLoopRun()
-                    pairer?.stop()
-                    if !device.isPaired() {
-                        print("failed to pair")
-                    }
-                } catch {
-                    print("Error getting device: \(error)")
-                }
-                print("Pairing with device \(id) with PIN: \(pin ?? "no PIN provided")")
+                try pairWithDevice(id, pin: pin)
             } else if unpair {
-                do {
-                    let device = try getDevice(identifier: id)
-                    let removeSelector = NSSelectorFromString("remove")
-
-                    if device.responds(to: removeSelector) {
-                        device.perform(removeSelector)
-                        device.closeConnection()
-                    } else {
-                        print("Device does not respond to 'remove' selector.")  // More informative message
-                    }
-                } catch {
-                    print("Error getting device: \(error)")
-                }
-                print("Unpairing device \(id)")
+                try unpairDevice(id)
             } else if addFavourite {
-                // Logic to add to favorites
-                print("Adding device \(id) to favorites")
+                try addDeviceToFavorites(id)
             } else if removeFavourite {
-                // Logic to remove from favorites
-                print("Removing device \(id) from favorites")
+                try removeDeviceFromFavorites(id)
             } else if let formatOption = format {
-                // Logic for format
+                logger.info("Setting format to \(formatOption) for device \(id)")
                 print("Setting format to \(formatOption) for device command with ID \(id)")
             } else {
+                logger.info("No specific device action selected for \(id)")
                 print("No specific device action specified for ID \(id)")
             }
         }
-    }
 
     struct Get: ParsableCommand {
         @Flag(
