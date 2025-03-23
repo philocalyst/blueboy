@@ -5,12 +5,12 @@ The powerful and feature-rich command-line utility for controlling Bluetooth on 
 
 ## Features
 
-- 🔍 List paired, favorite, recently used, and connected devices
+- 🔍 List paired, favorite, and connected devices
 - 🔄 Connect to and disconnect from devices
 - 🔌 Toggle Bluetooth power and discoverability
 - 📱 Get detailed device information
 - 🔐 Pair with devices (with optional PIN support)
-- 🗂️ Manage device favorites
+- 🗂️ Manage device favorites (If your mac is old lol)
 - ⏱️ Inquire for devices in range with customizable duration
 
 ## Installation
