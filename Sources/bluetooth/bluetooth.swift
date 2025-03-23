@@ -7,6 +7,26 @@ import Logging
 
 let logger = Logger(label: "com.blueutil")
 
+// MARK: - Error Handling
+enum BluetoothError: Error, LocalizedError {
+    case invalidIdentifier(identifier: String)
+    case deviceNotFound(identifier: String)
+    case connectionFailed(String)
+    case missingData(String)
+    case operationFailed(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidIdentifier(let identifier):
+            return "Invalid device identifier: \(identifier)"
+        case .deviceNotFound(let identifier):
+            return "Device not found: \(identifier)"
+        case .connectionFailed(let message):
+            return "Connection failed: \(message)"
+        case .missingData(let message):
+            return "Missing data: \(message)"
+        case .operationFailed(let message):
+            return "Operation failed: \(message)"
         }
     }
 }
