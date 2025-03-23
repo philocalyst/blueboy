@@ -4,24 +4,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "bluetooth",
+    name: "blueboy",
     platforms: [
-        .macOS(.v12) // Specify the minimum macOS version if applicable
+        .macOS(.v12)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .executable(
-            name: "bluetooth", // Keep the executable name as "bluetooth"
-            targets: ["bluetooth"]), // Update the target name to match the product name
+            name: "blueboy",
+            targets: ["blueboy"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .executableTarget(
-            name: "bluetooth",
-            dependencies: [.product(name: "ArgumentParser", package: "swift-argument-parser")]), // Update the target name to "bluetooth"
+            name: "blueboy",
+            dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "Logging", package: "swift-log"),
+            ])
     ]
 )
