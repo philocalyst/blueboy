@@ -5,19 +5,8 @@ import Foundation
 @preconcurrency import IOBluetooth
 import Logging
 
-class DeviceNotificationRunLoopStopper: NSObject {
-    private var expectedDevice: IOBluetoothDevice?
+let logger = Logger(label: "com.blueutil")
 
-    init(withExpectedDevice device: IOBluetoothDevice) {
-        expectedDevice = device
-    }
-
-    @objc func notification(
-        _ notification: IOBluetoothUserNotification, fromDevice device: IOBluetoothDevice
-    ) {
-        if expectedDevice == device {
-            notification.unregister()
-            CFRunLoopStop(CFRunLoopGetCurrent())
         }
     }
 }
