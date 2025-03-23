@@ -242,8 +242,12 @@ struct Blueutil: ParsableCommand {
     }
 }
 
+// MARK: - List Command
 extension Blueutil {
     struct List: ParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "List Bluetooth devices"
+        )
         @Flag(help: "List favorite devices")
         var favorites: Bool = false
 
