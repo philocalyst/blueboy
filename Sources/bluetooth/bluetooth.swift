@@ -220,7 +220,7 @@ struct Blueutil: ParsableCommand {
         version: "2.12.0",
         subcommands: [
             Device.self,
-            Set.self,
+            // Set.self,
             Get.self,
             List.self,
         ]
@@ -603,82 +603,82 @@ extension Blueutil {
 }
 
 // MARK: - Set Command
-extension Blueutil {
-    struct Set: ParsableCommand {
-        static let configuration = CommandConfiguration(
-            abstract: "Set Bluetooth system states"
-        )
+// extension Blueutil {
+//     struct Set: ParsableCommand {
+//         static let configuration = CommandConfiguration(
+//             abstract: "Set Bluetooth system states"
+//         )
 
-        // Convert options to arguments as requested
-        @Argument(help: "Operation to perform (power or discoverable)")
-        var operation: String
+//         // Convert options to arguments as requested
+//         @Argument(help: "Operation to perform (power or discoverable)")
+//         var operation: String
 
-        @Argument(help: "State to set")
-        var state: State
+//         @Argument(help: "State to set")
+//         var state: State
 
-        mutating func run() throws {
-            logger.info("Running Set command with operation: \(operation), state: \(state)")
+//         mutating func run() throws {
+//             logger.info("Running Set command with operation: \(operation), state: \(state)")
 
-            switch operation.lowercased() {
-            case "power", "p":
-                try setPowerState(state)
-            case "discoverable", "d":
-                try setDiscoverableState(state)
-            default:
-                logger.error("Invalid operation: \(operation)")
-                throw BluetoothError.invalidArgument(
-                    "Invalid operation: \(operation). Use 'power' or 'discoverable'")
-            }
-        }
+//             switch operation.lowercased() {
+//             case "power", "p":
+//                 try setPowerState(state)
+//             case "discoverable", "d":
+//                 try setDiscoverableState(state)
+//             default:
+//                 logger.error("Invalid operation: \(operation)")
+//                 throw BluetoothError.invalidArgument(
+//                     "Invalid operation: \(operation). Use 'power' or 'discoverable'")
+//             }
+//         }
 
-        private func setPowerState(_ state: State) throws {
-            // logger.info("Setting power state to \(state)")
-            // let host = IOBluetoothHostController.init()
+//         private func setPowerState(_ state: State) throws {
+//             // logger.info("Setting power state to \(state)")
+//             // let host = IOBluetoothHostController.init()
 
-            // // Get current power state
-            // let currentPower = host.powerState
-            // logger.debug("Current power state: \(currentPower)")
+//             // // Get current power state
+//             // let currentPower = host.powerState
+//             // logger.debug("Current power state: \(currentPower)")
 
-            // // Determine target state
-            // let targetState: Bool
-            // if state == .toggle {
-            //     targetState = !currentPower.boolValue
-            //     logger.debug(
-            //         "Toggling power state from \(currentPower.boolValue) to \(targetState)")
-            // } else {
-            //     targetState = state.boolValue
-            //     logger.debug("Setting power state to \(targetState)")
-            // }
+//             // // Determine target state
+//             // let targetState: Bool
+//             // if state == .toggle {
+//             //     targetState = !currentPower.boolValue
+//             //     logger.debug(
+//             //         "Toggling power state from \(currentPower.boolValue) to \(targetState)")
+//             // } else {
+//             //     targetState = state.boolValue
+//             //     logger.debug("Setting power state to \(targetState)")
+//             // }
 
-            // // Implementation for setting power state would go here
-            // // Since we don't have the actual implementation, just log and print
-            // logger.info("Power state set to \(targetState ? "on" : "off")")
-            // print("Power state set to \(targetState ? "on" : "off")")
-        }
+//             // // Implementation for setting power state would go here
+//             // // Since we don't have the actual implementation, just log and print
+//             // logger.info("Power state set to \(targetState ? "on" : "off")")
+//             // print("Power state set to \(targetState ? "on" : "off")")
+//         }
 
-        private func setDiscoverableState(_ state: State) throws {
-            logger.info("Setting discoverable state to \(state)")
+//         private func setDiscoverableState(_ state: State) throws {
+//             logger.info("Setting discoverable state to \(state)")
 
-            // Get current discoverable state (placeholder - implementation would vary)
-            let currentState = false  // Example value
-            logger.debug("Current discoverable state: \(currentState)")
+//             // Get current discoverable state (placeholder - implementation would vary)
+//             let currentState = false  // Example value
+//             logger.debug("Current discoverable state: \(currentState)")
 
-            // Determine target state
-            let targetState: Bool
-            if state == .toggle {
-                targetState = !currentState
-                logger.debug("Toggling discoverable state from \(currentState) to \(targetState)")
-            } else {
-                targetState = state.boolValue
-                logger.debug("Setting discoverable state to \(targetState)")
-            }
+//             // Determine target state
+//             let targetState: Bool
+//             if state == .toggle {
+//                 targetState = !currentState
+//                 logger.debug("Toggling discoverable state from \(currentState) to \(targetState)")
+//             } else {
+//                 targetState = state.boolValue
+//                 logger.debug("Setting discoverable state to \(targetState)")
+//             }
 
-            // Implementation for setting discoverable state would go here
-            logger.info("Discoverable state set to \(targetState ? "on" : "off")")
-            print("Discoverable state set to \(targetState ? "on" : "off")")
-        }
-    }
-}
+//             // Implementation for setting discoverable state would go here
+//             logger.info("Discoverable state set to \(targetState ? "on" : "off")")
+//             print("Discoverable state set to \(targetState ? "on" : "off")")
+//         }
+//     }
+// }
 
 // MARK: - Get Command
 extension Blueutil {
