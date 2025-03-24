@@ -89,14 +89,12 @@ struct DevicePrintOptions {
     // Presets!!
     static let all = DevicePrintOptions(
         showAddress: true, showName: true, showConnected: true,
-        showRSSI: true, showPairing: true, showIsIncoming: true,
-        showIsFavorite: true, showRecentAccessDate: true
+        showRSSI: true, showPairing: true, showIsIncoming: true
     )
 
     static let basic = DevicePrintOptions(
         showAddress: true, showName: true, showConnected: true,
-        showRSSI: false, showPairing: false, showIsIncoming: false,
-        showIsFavorite: false, showRecentAccessDate: false
+        showRSSI: false, showPairing: false, showIsIncoming: false
     )
 }
 
