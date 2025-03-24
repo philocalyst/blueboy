@@ -5,12 +5,11 @@ The powerful and feature-rich command-line utility for controlling Bluetooth on 
 
 ## Features
 
-- 🔍 List paired, favorite, and connected devices
+- 🔍 List paired and connected devices
 - 🔄 Connect to and disconnect from devices
 - 🔌 Toggle Bluetooth power and discoverability
 - 📱 Get detailed device information
 - 🔐 Pair with devices (with optional PIN support)
-- 🗂️ Manage device favorites (If your mac is old lol)
 - ⏱️ Inquire for devices in range with customizable duration
 
 ## Installation
@@ -52,9 +51,6 @@ blueutil device 00-11-22-33-44-55 --pair --pin 1234
 # Unpair a device
 blueutil device 00-11-22-33-44-55 --unpair
 
-# Add/remove device from favorites
-blueutil device 00-11-22-33-44-55 --add-favorite
-blueutil device 00-11-22-33-44-55 --remove-favorite
 
 # Check if a device is connected
 blueutil device 00-11-22-33-44-55 --is-connected
@@ -65,12 +61,6 @@ blueutil device 00-11-22-33-44-55 --is-connected
 ```bash
 # List all paired devices
 blueutil list --paired
-
-# List recently used devices (default 10)
-blueutil list --recent 5
-
-# List favorite devices
-blueutil list --favorites
 
 # List connected devices
 blueutil list --connected
