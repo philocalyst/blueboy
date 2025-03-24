@@ -14,6 +14,9 @@ enum BluetoothError: Error, LocalizedError {
     case connectionFailed(String)
     case missingData(String)
     case operationFailed(String)
+    case timeoutError(String)
+    case invalidState(String)
+    case invalidArgument(String)
 
     var errorDescription: String? {
         switch self {
@@ -27,6 +30,12 @@ enum BluetoothError: Error, LocalizedError {
             return "Missing data: \(message)"
         case .operationFailed(let message):
             return "Operation failed: \(message)"
+        case .timeoutError(let message):
+            return "Operation timed out: \(message)"
+        case .invalidState(let message):
+            return "Invalid state: \(message)"
+        case .invalidArgument(let message):
+            return "Invalid argument: \(message)"
         }
     }
 }
