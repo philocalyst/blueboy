@@ -85,8 +85,6 @@ struct DevicePrintOptions {
     var showRSSI: Bool
     var showPairing: Bool
     var showIsIncoming: Bool
-    var showIsFavorite: Bool
-    var showRecentAccessDate: Bool
 
     // Presets!!
     static let all = DevicePrintOptions(
