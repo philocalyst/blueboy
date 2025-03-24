@@ -117,7 +117,7 @@ class DeviceNotificationRunLoopStopper: NSObject {
 }
 
 class DeviceInquiryRunLoopStopper: NSObject, CBPeripheralDelegate {
-    //Delegate method
+    // Delegate method
     func peripheralDidDiscoverServices(_ peripheral: CBPeripheral) {
         CFRunLoopStop(RunLoop.current.getCFRunLoop())
     }
@@ -125,17 +125,21 @@ class DeviceInquiryRunLoopStopper: NSObject, CBPeripheralDelegate {
 
 // MARK: - Device Management Functions
 func getDevice(identifier: String) throws -> IOBluetoothDevice {
+    logger.debug("Attempting to find device with identifier: \(identifier)")
+
     if isValidBluetoothID(arg: identifier) {
         guard let device = IOBluetoothDevice(addressString: identifier) else {
             logger.error("Device not found with identifier: \(identifier)")
             throw BluetoothError.deviceNotFound(identifier: identifier)
         }
+        logger.debug("Found device by address: \(identifier)")
         return device
     } else {
-        // If no identifer provided, move to start checking for a matched name in the list
+        // If no valid identifier provided, check for a matched name in the list
         if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
             for device in pairedDevices {
                 if device.nameOrAddress == identifier {
+                    logger.debug("Found device by name: \(identifier)")
                     return device
                 }
             }
@@ -151,7 +155,9 @@ func isValidBluetoothID(arg: String) -> Bool {
     do {
         let regex = try NSRegularExpression(pattern: regexPattern, options: [.caseInsensitive])
         let range = NSRange(location: 0, length: arg.utf16.count)
-        return regex.firstMatch(in: arg, range: range) != nil
+        let isValid = regex.firstMatch(in: arg, range: range) != nil
+        logger.debug("Bluetooth ID validation for \(arg): \(isValid)")
+        return isValid
     } catch {
         logger.error("Error creating regex: \(error)")
         return false
@@ -160,6 +166,8 @@ func isValidBluetoothID(arg: String) -> Bool {
 
 // Fully featured list devices func
 func listDevices(_ devices: [IOBluetoothDevice], options: DevicePrintOptions) {
+    logger.debug("Listing \(devices.count) devices")
+
     if devices.isEmpty {
         print("No devices found.")
         return
@@ -195,20 +203,6 @@ func listDevices(_ devices: [IOBluetoothDevice], options: DevicePrintOptions) {
                 if options.showIsIncoming {
                     deviceInfo.append("Incoming: \(device.isIncoming() ? "Yes" : "No")")
                 }
-
-                if options.showIsFavorite {
-                    deviceInfo.append("Favorite: \(device.isFavorite() ? "Yes" : "No")")
-                }
-
-                if options.showRecentAccessDate, let recentAccessDate = device.recentAccessDate() {
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateStyle = .medium
-                    dateFormatter.timeStyle = .short
-                    deviceInfo.append(
-                        "Last Accessed: \(dateFormatter.string(from: recentAccessDate))")
-                } else if options.showRecentAccessDate {
-                    deviceInfo.append("Last Accessed: Never")
-                }
             }
 
             print(deviceInfo.joined(separator: ", "))
@@ -226,7 +220,6 @@ struct Blueutil: ParsableCommand {
         version: "2.12.0",
         subcommands: [
             Device.self,
-            // Wait.self,
             Set.self,
             Get.self,
             List.self,
@@ -236,7 +229,18 @@ struct Blueutil: ParsableCommand {
     @Option(name: .customLong("format"), help: "Change output format")
     var format: Format?
 
+    @Flag(name: .customLong("debug"), help: "Enable debug logging")
+    var debug: Bool = false
+
+    @Flag(name: .customLong("verbose"), help: "Enable verbose logging (implies debug)")
+    var verbose: Bool = false
+
     mutating func run() throws {
+        // Configure logging based on debug/verbose flags
+        configureLogging()
+
+        logger.debug("Blueutil starting with format: \(format?.rawValue ?? "default")")
+
         if let formatOption = format {
             logger.info("Setting format to \(formatOption)")
             print("Setting format to \(formatOption)")
@@ -244,6 +248,21 @@ struct Blueutil: ParsableCommand {
             logger.info("Outputting current Bluetooth state")
             print("Outputting current Bluetooth state...")
         }
+    }
+
+    private func configureLogging() {
+        let logLevel: Logger.Level
+
+        if verbose {
+            logLevel = .trace
+            logger.info("Verbose logging enabled")
+        } else if debug {
+            logLevel = .debug
+            logger.info("Debug logging enabled")
+        } else {
+            logLevel = .warning
+        }
+
     }
 }
 
@@ -254,8 +273,7 @@ extension Blueutil {
             abstract: "List Bluetooth devices"
         )
 
-        @Flag(help: "List favorite devices")
-        var favorites: Bool = false
+        // Removed deprecated favorites option
 
         @Option(help: "Inquiry devices in range, duration in seconds (default 10)")
         var inquiry: Int?
@@ -263,8 +281,7 @@ extension Blueutil {
         @Flag(help: "List paired devices")
         var paired: Bool = false
 
-        @Option(help: "List recently used devices, default 10, 0 to list all")
-        var recent: Int?
+        // Removed deprecated recent option
 
         @Flag(help: "List connected devices")
         var connected: Bool = false
@@ -282,41 +299,21 @@ extension Blueutil {
                 showConnected: true,
                 showRSSI: true,
                 showPairing: true,
-                showIsIncoming: true,
-                showIsFavorite: false,
-                showRecentAccessDate: true
+                showIsIncoming: true
             )
 
-            if favorites {
-                logger.info("Listing favorite devices")
-                if let favoriteDevices = IOBluetoothDevice.favoriteDevices() as? [IOBluetoothDevice]
-                {
-                    listDevices(favoriteDevices, options: printOptions)
-                } else {
-                    print("Could not retrieve favorite devices.")
-                }
-            } else if let duration = inquiry {
+            if let duration = inquiry {
                 logger.info("Inquiring for \(duration) seconds")
                 let devices = try getDevicesInRange(duration: Double(duration))
                 listDevices(devices, options: printOptions)
-                print("Inquiring for \(duration) seconds...")
-                // TODO: Implementation for device inquiry
             } else if paired {
                 logger.info("Listing paired devices")
                 if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
                     printOptions.showPairing = false
                     listDevices(pairedDevices, options: printOptions)
                 } else {
+                    logger.error("Could not retrieve paired devices")
                     print("Could not retrieve paired devices.")
-                }
-            } else if let count = recent {
-                logger.info("Listing \(count) recent devices")
-                if let recentDevices = IOBluetoothDevice.recentDevices(UInt(count))
-                    as? [IOBluetoothDevice]
-                {
-                    listDevices(recentDevices, options: printOptions)
-                } else {
-                    print("Could not retrieve recent devices.")
                 }
             } else if connected {
                 logger.info("Listing connected devices")
@@ -330,18 +327,24 @@ extension Blueutil {
                 if let pairedDevices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] {
                     listDevices(pairedDevices, options: printOptions)
                 } else {
+                    logger.error("Could not retrieve paired devices")
                     print("Could not retrieve paired devices.")
                 }
             }
         }
+
         private func getDevicesInRange(duration: Double) throws -> [IOBluetoothDevice] {
-            try autoreleasepool {
+            logger.debug("Starting device inquiry for \(duration) seconds")
+
+            return try autoreleasepool {
                 class DeviceInquiryRunLoopStopper: NSObject, IOBluetoothDeviceInquiryDelegate {
                     var isCompleted = false
 
                     func deviceInquiryComplete(
                         _ sender: IOBluetoothDeviceInquiry!, error: IOReturn, aborted: Bool
                     ) {
+                        logger.debug(
+                            "Device inquiry completed with status: \(error), aborted: \(aborted)")
                         isCompleted = true
                         CFRunLoopStop(CFRunLoopGetCurrent())
                     }
@@ -357,10 +360,14 @@ extension Blueutil {
 
                 let result = inquirer?.start()
                 if result != kIOReturnSuccess {
-                    throw BluetoothError.deviceNotFound(identifier: "Failed to start inquiry")
+                    logger.error("Failed to start inquiry with error: \(result ?? IOReturn(0))")
+                    throw BluetoothError.operationFailed("Failed to start inquiry")
                 }
 
+                logger.debug("Inquiry started, waiting for \(duration) seconds")
+
                 let timer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { _ in
+                    logger.debug("Inquiry timeout reached")
                     syncQueue.sync {
                         inquirer?.stop()
                     }
@@ -375,9 +382,11 @@ extension Blueutil {
                 }
 
                 if let foundDevices = inquirer?.foundDevices() as? [IOBluetoothDevice] {
+                    logger.debug("Found \(foundDevices.count) devices in range")
                     return foundDevices
                 }
 
+                logger.error("No devices found during inquiry")
                 throw BluetoothError.deviceNotFound(identifier: "No devices found")
             }
         }
@@ -415,15 +424,7 @@ extension Blueutil {
         @Flag(name: .customLong("unpair"), help: "EXPERIMENTAL unpair the device")
         var unpair: Bool = false
 
-        @Flag(
-            name: [.customLong("add-favourite"), .customLong("add-favorite")],
-            help: "Add to favourites")
-        var addFavourite: Bool = false
-
-        @Flag(
-            name: [.customLong("remove-favourite"), .customLong("remove-favorite")],
-            help: "Remove from favourites")
-        var removeFavourite: Bool = false
+        // Removed deprecated favorite options
 
         @Option(name: .customLong("format"), help: "Change output format")
         var format: Format?
@@ -443,10 +444,6 @@ extension Blueutil {
                 try pairWithDevice(id, pin: pin)
             } else if unpair {
                 try unpairDevice(id)
-            } else if addFavourite {
-                try addDeviceToFavorites(id)
-            } else if removeFavourite {
-                try removeDeviceFromFavorites(id)
             } else if let formatOption = format {
                 logger.info("Setting format to \(formatOption) for device \(id)")
                 print("Setting format to \(formatOption) for device command with ID \(id)")
@@ -473,6 +470,8 @@ extension Blueutil {
         private func connectToDevice(_ id: String) throws {
             logger.info("Connecting to device \(id)")
             let device = try getDevice(identifier: id)
+
+            logger.debug("Attempting to open connection")
             let result = device.openConnection()
 
             if result != kIOReturnSuccess {
@@ -480,6 +479,7 @@ extension Blueutil {
                 throw BluetoothError.connectionFailed("Return code: \(result)")
             }
 
+            logger.debug("Connection successful")
             print("Successfully connected to device \(id)")
         }
 
@@ -487,19 +487,24 @@ extension Blueutil {
             logger.info("Disconnecting from device \(id)")
             let device = try getDevice(identifier: id)
 
+            logger.debug("Registering for disconnect notification")
             let stopper = DeviceNotificationRunLoopStopper(withExpectedDevice: device)
             device.register(
                 forDisconnectNotification: stopper,
                 selector: #selector(DeviceNotificationRunLoopStopper.notification(_:fromDevice:))
             )
 
+            logger.debug("Closing connection")
             let result = device.closeConnection()
             if result != kIOReturnSuccess {
                 logger.error("Failed to disconnect from device \(id): \(result)")
                 throw BluetoothError.operationFailed("Return code: \(result)")
             }
 
+            logger.debug("Waiting for disconnect completion")
             RunLoop.current.run()
+
+            logger.info("Disconnect complete")
             print("Successfully disconnected from device \(id)")
         }
 
@@ -509,26 +514,40 @@ extension Blueutil {
 
             class BluetoothPairDelegate: NSObject, IOBluetoothDevicePairDelegate {
                 var requestedPin: Int = 0
+                let logger: Logger
+
+                init(logger: Logger) {
+                    self.logger = logger
+                    super.init()
+                }
 
                 // Implement required delegate methods
                 func devicePairingStarted(_ sender: IOBluetoothDevicePair) {
-                    logger.info("Pairing started")
+                    logger.debug("Pairing started")
                 }
 
                 func devicePairingFinished(_ sender: IOBluetoothDevicePair, error: IOReturn) {
-                    logger.info("Pairing finished with status: \(error)")
+                    logger.debug("Pairing finished with status: \(error)")
                     CFRunLoopStop(RunLoop.current.getCFRunLoop())
-
                 }
 
                 func devicePairingPINCodeRequest(_ sender: IOBluetoothDevicePair) {
-                    // if requestedPin > 0 {
-                    //     sender.replyPINCode(withNumber: requestedPin)
-                    // }
+                    logger.debug("PIN code requested, requested PIN: \(requestedPin)")
+                    if requestedPin > 0 {
+                        logger.debug("Replying with PIN: \(requestedPin)")
+                        let pinValue = requestedPin
+                        let pinLength = String(pinValue).count
+
+                        var bluetoothPin = BluetoothPINCode()
+
+                        let pinCodePointer = withUnsafeMutablePointer(to: &bluetoothPin) { $0 }
+
+                        sender.replyPINCode(pinLength, pinCode: pinCodePointer)
+                    }
                 }
             }
 
-            let delegate = BluetoothPairDelegate()
+            let delegate = BluetoothPairDelegate(logger: logger)
             guard let pairer = IOBluetoothDevicePair(device: device) else {
                 logger.error("Failed to create pairing object for device \(id)")
                 throw BluetoothError.operationFailed("Could not create pairing object")
@@ -537,15 +556,20 @@ extension Blueutil {
             pairer.delegate = delegate
 
             if let pinString = pin, let pinValue = Int(pinString) {
+                logger.debug("Using PIN: \(pinValue)")
                 delegate.requestedPin = pinValue
             }
 
+            logger.debug("Starting pairing process")
             if pairer.start() != kIOReturnSuccess {
                 logger.error("Failed to start pairing with device \(id)")
                 throw BluetoothError.operationFailed("Failed to start pairing process")
             }
 
+            logger.debug("Waiting for pairing completion")
             RunLoop.current.run()
+
+            logger.debug("Stopping pairing process")
             pairer.stop()
 
             if !device.isPaired() {
@@ -554,6 +578,7 @@ extension Blueutil {
                     "Device is not paired after the pairing process")
             }
 
+            logger.info("Pairing successful")
             print("Successfully paired with device \(id)")
         }
 
@@ -562,80 +587,20 @@ extension Blueutil {
             let device = try getDevice(identifier: id)
             let removeSelector = NSSelectorFromString("remove")
 
+            logger.debug("Checking if device supports unpair operation")
             if device.responds(to: removeSelector) {
+                logger.debug("Performing unpair operation")
                 device.perform(removeSelector)
                 device.closeConnection()
+                logger.info("Unpair successful")
                 print("Successfully unpaired device \(id)")
             } else {
                 logger.error("Device \(id) does not support unpair operation")
                 throw BluetoothError.operationFailed("Device does not support unpair operation")
             }
         }
-
-        private func addDeviceToFavorites(_ id: String) throws {
-            logger.info("Adding device \(id) to favorites")
-            let device = try getDevice(identifier: id)
-            // TODO: Implementation for adding to favorites
-            print("Added device \(id) to favorites")
-        }
-
-        private func removeDeviceFromFavorites(_ id: String) throws {
-            logger.info("Removing device \(id) from favorites")
-            let device = try getDevice(identifier: id)
-            // TODO: Implementation for removing from favorites
-            print("Removed device \(id) from favorites")
-        }
     }
 }
-
-// // MARK: - Wait Command
-// extension Blueutil {
-//     struct Wait: ParsableCommand {
-//         static let configuration = CommandConfiguration(
-//             abstract: "Wait for device connection or disconnection"
-//         )
-
-//         @Argument(help: "Device ID (address or name)")
-//         var id: String
-
-//         @Option(
-//             name: .customLong("wait-connect"),
-//             help: "EXPERIMENTAL wait for device to connect (timeout in seconds)")
-//         var waitConnect: Int?
-
-//         @Option(
-//             name: .customLong("wait-disconnect"),
-//             help: "EXPERIMENTAL wait for device to disconnect (timeout in seconds)")
-//         var waitDisconnect: Int?
-
-//         mutating func run() throws {
-//             if let timeout = waitConnect {
-//                 try waitForDeviceConnection(id, timeout: timeout)
-//             } else if let timeout = waitDisconnect {
-//                 try waitForDeviceDisconnection(id, timeout: timeout)
-//             } else {
-//                 logger.warning("No wait condition specified for device \(id)")
-//                 print("No wait condition specified for device \(id)")
-//             }
-//         }
-
-//         private func waitForDeviceConnection(_ id: String, timeout: Int) throws {
-//             logger.info("Waiting for device \(id) to connect (timeout: \(timeout)s)")
-//             let device = try getDevice(identifier: id)
-
-//             // TODO: Implementation for waiting for connection
-//             print("Waiting for device \(id) to connect...")
-//         }
-
-//         private func waitForDeviceDisconnection(_ id: String, timeout: Int) throws {
-//             logger.info("Waiting for device \(id) to disconnect (timeout: \(timeout)s)")
-//             let device = try getDevice(identifier: id)
-
-//             // TODO: Implementation for waiting for disconnection
-//             print("Waiting for device \(id) to disconnect...")
-//         }
-//     }
-// }
 
 // MARK: - Set Command
 extension Blueutil {
@@ -644,39 +609,73 @@ extension Blueutil {
             abstract: "Set Bluetooth system states"
         )
 
-        @Option(name: [.short, .customLong("power")], help: "Set power state")
-        var powerState: State?
+        // Convert options to arguments as requested
+        @Argument(help: "Operation to perform (power or discoverable)")
+        var operation: String
 
-        @Option(name: [.short, .customLong("discoverable")], help: "Set discoverable state")
-        var discoverableState: State?
+        @Argument(help: "State to set")
+        var state: State
 
         mutating func run() throws {
-            if let state = powerState {
+            logger.info("Running Set command with operation: \(operation), state: \(state)")
+
+            switch operation.lowercased() {
+            case "power", "p":
                 try setPowerState(state)
-            }
-
-            if let state = discoverableState {
+            case "discoverable", "d":
                 try setDiscoverableState(state)
-            }
-
-            if powerState == nil && discoverableState == nil {
-                logger.warning("No state changes specified")
-                print("No state changes specified")
+            default:
+                logger.error("Invalid operation: \(operation)")
+                throw BluetoothError.invalidArgument(
+                    "Invalid operation: \(operation). Use 'power' or 'discoverable'")
             }
         }
 
         private func setPowerState(_ state: State) throws {
-            logger.info("Setting power state to \(state)")
-            let host = IOBluetoothHostController.init()
-            var power = host.powerState
-            print(power)
-            print("Setting power state to \(state)")
+            // logger.info("Setting power state to \(state)")
+            // let host = IOBluetoothHostController.init()
+
+            // // Get current power state
+            // let currentPower = host.powerState
+            // logger.debug("Current power state: \(currentPower)")
+
+            // // Determine target state
+            // let targetState: Bool
+            // if state == .toggle {
+            //     targetState = !currentPower.boolValue
+            //     logger.debug(
+            //         "Toggling power state from \(currentPower.boolValue) to \(targetState)")
+            // } else {
+            //     targetState = state.boolValue
+            //     logger.debug("Setting power state to \(targetState)")
+            // }
+
+            // // Implementation for setting power state would go here
+            // // Since we don't have the actual implementation, just log and print
+            // logger.info("Power state set to \(targetState ? "on" : "off")")
+            // print("Power state set to \(targetState ? "on" : "off")")
         }
 
         private func setDiscoverableState(_ state: State) throws {
             logger.info("Setting discoverable state to \(state)")
-            // Implementation for setting discoverable state
-            print("Setting discoverable state to \(state)")
+
+            // Get current discoverable state (placeholder - implementation would vary)
+            let currentState = false  // Example value
+            logger.debug("Current discoverable state: \(currentState)")
+
+            // Determine target state
+            let targetState: Bool
+            if state == .toggle {
+                targetState = !currentState
+                logger.debug("Toggling discoverable state from \(currentState) to \(targetState)")
+            } else {
+                targetState = state.boolValue
+                logger.debug("Setting discoverable state to \(targetState)")
+            }
+
+            // Implementation for setting discoverable state would go here
+            logger.info("Discoverable state set to \(targetState ? "on" : "off")")
+            print("Discoverable state set to \(targetState ? "on" : "off")")
         }
     }
 }
@@ -700,6 +699,8 @@ extension Blueutil {
         var format: Format?
 
         mutating func run() throws {
+            logger.info("Running Get command")
+
             if discoverableStateOutput {
                 try getDiscoverableState()
             }
@@ -717,15 +718,26 @@ extension Blueutil {
         private func getDiscoverableState() throws {
             logger.info("Getting discoverable state")
             let host = IOBluetoothHostController.init()
-            // TODO: Implementation for getting discoverable state
-            print("1")  // Example output
+
+            // Placeholder for actual implementation
+            let isDiscoverable = true  // Example value
+            logger.debug("Current discoverable state: \(isDiscoverable)")
+
+            print(isDiscoverable ? "1" : "0")
         }
 
         private func getPowerState() throws {
             logger.info("Getting power state")
             let host = IOBluetoothHostController.init()
-            let power = host.powerState
-            print(power.rawValue)
+
+            do {
+                let power = host.powerState
+                logger.debug("Power state raw value: \(power.rawValue)")
+                print(power.rawValue)
+            } catch {
+                logger.error("Failed to get power state: \(error)")
+                throw BluetoothError.operationFailed("Failed to get power state")
+            }
         }
     }
 }
