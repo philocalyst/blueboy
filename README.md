@@ -88,14 +88,6 @@ blueutil get --power
 blueutil get --discoverable
 ```
 
-### Output Formatting
-
-```bash
-# Change output format
-blueutil --format json
-blueutil --format json-pretty
-```
-
 ## How It Works
 
 Blueboy leverages macOS CoreBluetooth and IOBluetooth frameworks to provide a comprehensive command-line interface for Bluetooth management. Built with Swift's ArgumentParser, it offers a modern, type-safe command structure with helpful error handling.

@@ -226,8 +226,8 @@ struct Blueutil: ParsableCommand {
         ]
     )
 
-    @Option(name: .customLong("format"), help: "Change output format")
-    var format: Format?
+    // @Option(name: .customLong("format"), help: "Change output format")
+    // var format: Format?
 
     @Flag(name: .customLong("debug"), help: "Enable debug logging")
     var debug: Bool = false
@@ -239,15 +239,15 @@ struct Blueutil: ParsableCommand {
         // Configure logging based on debug/verbose flags
         configureLogging()
 
-        logger.debug("Blueutil starting with format: \(format?.rawValue ?? "default")")
+        // logger.debug("Blueutil starting with format: \(format?.rawValue ?? "default")")
 
-        if let formatOption = format {
-            logger.info("Setting format to \(formatOption)")
-            print("Setting format to \(formatOption)")
-        } else {
-            logger.info("Outputting current Bluetooth state")
-            print("Outputting current Bluetooth state...")
-        }
+        // if let formatOption = format {
+        //     logger.info("Setting format to \(formatOption)")
+        //     print("Setting format to \(formatOption)")
+        // } else {
+        //     logger.info("Outputting current Bluetooth state")
+        //     print("Outputting current Bluetooth state...")
+        // }
     }
 
     private func configureLogging() {
@@ -286,8 +286,8 @@ extension Blueutil {
         @Flag(help: "List connected devices")
         var connected: Bool = false
 
-        @Option(name: .customLong("format"), help: "Change output format")
-        var format: Format?
+        // @Option(name: .customLong("format"), help: "Change output format")
+        // var format: Format?
 
         mutating func run() throws {
             logger.info("Running List command")
@@ -426,8 +426,8 @@ extension Blueutil {
 
         // Removed deprecated favorite options
 
-        @Option(name: .customLong("format"), help: "Change output format")
-        var format: Format?
+        // @Option(name: .customLong("format"), help: "Change output format")
+        // var format: Format?
 
         mutating func run() throws {
             logger.info("Running Device command for ID: \(id)")
@@ -444,9 +444,9 @@ extension Blueutil {
                 try pairWithDevice(id, pin: pin)
             } else if unpair {
                 try unpairDevice(id)
-            } else if let formatOption = format {
-                logger.info("Setting format to \(formatOption) for device \(id)")
-                print("Setting format to \(formatOption) for device command with ID \(id)")
+                // } else if let formatOption = format {
+                //     logger.info("Setting format to \(formatOption) for device \(id)")
+                //     print("Setting format to \(formatOption) for device command with ID \(id)")
             } else {
                 logger.info("No specific device action selected for \(id)")
                 print("No specific device action specified for ID \(id)")
@@ -695,8 +695,8 @@ extension Blueutil {
         @Flag(name: [.short, .customLong("power")], help: "Output power status as 1 or 0")
         var powerStateOutput: Bool = false
 
-        @Option(name: .customLong("format"), help: "Change output format")
-        var format: Format?
+        // @Option(name: .customLong("format"), help: "Change output format")
+        // var format: Format?
 
         mutating func run() throws {
             logger.info("Running Get command")
