@@ -1,28 +1,35 @@
-// swift-tools-version: 6.0
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
+// swift-tools-version: 5.7
 import PackageDescription
 
 let package = Package(
-    name: "blueboy",
+    name: "Blue",
     platforms: [
-        .macOS(.v12)
+        .macOS(.v10_15)
     ],
     products: [
+        .library(
+            name: "BlueKit",
+            targets: ["BlueKit"]),
         .executable(
-            name: "blueboy",
-            targets: ["blueboy"])
+            name: "blueutil",
+            targets: ["Blue"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.4.0"),
     ],
     targets: [
-        .executableTarget(
-            name: "blueboy",
+        .target(
+            name: "BlueKit",
             dependencies: [
+                .product(name: "Logging", package: "swift-log")
+            ]),
+        .executableTarget(
+            name: "Blue",
+            dependencies: [
+                "BlueKit",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Logging", package: "swift-log"),
-            ])
+            ]),
     ]
 )
