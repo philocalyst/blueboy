@@ -1,6 +1,8 @@
 # Welcome to BlueBoy
 
-BlueBoy(bboy) is a command-line utility for controlling Bluetooth on macOS. It provides a simple and effective way to manage Bluetooth devices, check system states, and list available, paired, or connected devices directly from your terminal.
+BlueBoy(bboy) is a command-line utility for controlling Bluetooth on macOS. It provides a simple and effective way to manage Bluetooth devices, check system states, and list available, paired, or connected devices directly from your terminal. It's a modern recreation of the classic `blueutil` project, built in modern swift. The library is free to use.
+
+> A note on feature-parity with blueutil, there are some hyper-private frameworks that blueutil uses that I haven't been able to get to work here. This means all of the set methods, and get discoverability. If you happen to be skilled in briding obj-c and swift, and especially interfacing with private frameworks from Swift, please open a PR, or shoot me an email!
 
 ## Brief Summary
 
