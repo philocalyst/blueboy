@@ -28,12 +28,12 @@ struct InRange: ParsableCommand {
   var duration: Int?
 
   func run() throws {
-    let logger = BlueUtilLogger.logger
+    let logger = BlueBoyLogger.logger
     let deviceManager = DeviceManager(logger: logger)
     let timeout = Double(duration ?? 10)
     logger.info("Inquiring for \(timeout) seconds")
     let devices = try deviceManager.getDevicesInRange(timeout: timeout)
-    let opts = defaultPrintOptions()
+    let opts = DevicePrintOptions.basic
     printDevices(devices, with: opts)
   }
 }
@@ -45,11 +45,11 @@ struct Paired: ParsableCommand {
   )
 
   func run() throws {
-    let logger = BlueUtilLogger.logger
+    let logger = BlueBoyLogger.logger
     let bt = BluetoothManager(logger: logger)
     logger.info("Listing paired devices")
     let devices = bt.getPairedDevices()
-    var opts = defaultPrintOptions()
+    var opts = DevicePrintOptions.basic
     opts.showPairing = false
     printDevices(devices, with: opts)
   }
@@ -62,65 +62,12 @@ struct Connected: ParsableCommand {
   )
 
   func run() throws {
-    let logger = BlueUtilLogger.logger
+    let logger = BlueBoyLogger.logger
     let bt = BluetoothManager(logger: logger)
     logger.info("Listing connected devices")
     let devices = bt.getConnectedDevices()
-    var opts = defaultPrintOptions()
+    var opts = DevicePrintOptions.basic
     opts.showConnected = false
     printDevices(devices, with: opts)
-  }
-}
-
-private func defaultPrintOptions() -> DevicePrintOptions {
-  DevicePrintOptions(
-    showAddress: true,
-    showName: true,
-    showConnected: true,
-    showRSSI: true,
-    showPairing: true,
-    showIsIncoming: true
-  )
-}
-
-public func printDevices(
-  _ devices: [IOBluetoothDevice],
-  with options: DevicePrintOptions
-) {
-  let logger = BlueUtilLogger.logger
-  logger.debug("Listing \(devices.count) devices")
-
-  guard !devices.isEmpty else {
-    print("No devices found.")
-    return
-  }
-
-  for device in devices {
-    var pieces = [String]()
-    autoreleasepool {
-      if options.showAddress, let addr = device.addressString {
-        pieces.append("Address: \(addr)")
-      }
-      if options.showName {
-        let name = device.nameOrAddress ?? "-"
-        pieces.append("Name: \(name)")
-      }
-      if options.showConnected {
-        let c = device.isConnected() ? "Yes" : "No"
-        pieces.append("Connected: \(c)")
-      }
-      if options.showRSSI {
-        pieces.append("RSSI: \(device.rawRSSI()) dbm")
-      }
-      if options.showPairing {
-        let p = device.isPaired() ? "Yes" : "No"
-        pieces.append("Paired: \(p)")
-      }
-      if options.showIsIncoming {
-        let i = device.isIncoming() ? "Yes" : "No"
-        pieces.append("Incoming: \(i)")
-      }
-    }
-    print(pieces.joined(separator: ", "))
   }
 }
