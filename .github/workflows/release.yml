@@ -112,7 +112,7 @@ jobs:
         env:
           SWIFT_FLAGS: ${{ matrix.target_flags }}
         # Run the just recipe, passing the target from the matrix, outputs to "dist/"
-        run: just package bboy ${{ matrix.target }}
+        run: just package ${{ env.BINARY_NAME }} ${{ matrix.target }}
 
       - name: Compress the binaries
         run: just compress-binaries "dist/"
