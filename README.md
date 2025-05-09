@@ -41,8 +41,7 @@ Used to retrieve system-level Bluetooth information.
 -   **Get Power State**:
     Check if Bluetooth is currently powered on. Outputs `1` for on, `0` for off.
     ```shell
-    bboy get --power
-    bboy get -p
+    bboy get power
     ```
     If no specific state is requested, it will prompt you:
     ```shell
@@ -69,16 +68,16 @@ This command has several sub-subcommands to list different categories of devices
     ```
     Output includes Address, Name, RSSI, Paired status, and Incoming status.
 
--   **Inquire Devices in Range** (`list inquiry`):
+-   **Inquire Devices in Range** (`list in-range`):
     Scans for nearby Bluetooth devices.
     ```shell
-    bboy list inquiry
+    bboy list in-range
     ```
     By default, it scans for 10 seconds. You can specify a custom duration:
     ```shell
-    bboy list inquiry <duration_in_seconds>
+    bboy list in-range <duration_in_seconds>
     # Example: Scan for 15 seconds
-    bboy list inquiry 15
+    bboy list in-range 15
     ```
     Output includes Address, Name, Connected status, RSSI, Paired status, and Incoming status.
 
