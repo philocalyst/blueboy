@@ -53,7 +53,7 @@ compress-binaries target_directory=("."):
     # Check if the file command output indicates a binary/executable type
     if file "$file" | grep -q -E 'executable|ELF|Mach-O|shared object'; then
         # Get the base filename without the path
-        filename="${file##*/}"
+        filename=$(basename "$file")
         
         # Get the base name without version number
         basename="${filename%%-*}"
@@ -62,9 +62,9 @@ compress-binaries target_directory=("."):
         
         # Create archive with just the basename, no directory structure
         tar -czf "${file}.tar.gz" \
-            -C "${file%/*}" \
-            -s "|^${filename}$|${basename}" \
-            "$filename"
+            -C "$(dirname "$file")" \
+            -s "|^${filename}$|${basename}|" \
+            "$(basename "$file")"
     fi
     done
 
