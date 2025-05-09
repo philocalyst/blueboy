@@ -76,53 +76,45 @@ struct ListCommand: ParsableCommand {
 ///   - devices: Array of IOBluetoothDevice instances
 ///   - options: DevicePrintOptions defining what information to show
 func listDevices(_ devices: [IOBluetoothDevice], options: DevicePrintOptions) -> [String] {
+
+private func printDevices(
+  _ devices: [IOBluetoothDevice],
+  with options: DevicePrintOptions
+) {
   let logger = BlueUtilLogger.logger
   logger.debug("Listing \(devices.count) devices")
 
-  var output = [String]()
-
-  if devices.isEmpty {
-    output.append("No devices found.")
-    return output
+  guard !devices.isEmpty else {
+    print("No devices found.")
+    return
   }
 
   for device in devices {
-    do {
-      var deviceInfo = [String]()
-
-      try autoreleasepool {
-        if options.showAddress, let addressString = device.addressString {
-          deviceInfo.append("Address: \(addressString)")
-        }
-
-        if options.showName {
-          let nameOrAddress = device.nameOrAddress ?? "-"
-          deviceInfo.append("Name: \(nameOrAddress)")
-        }
-
-        if options.showConnected {
-          let isConnected = device.isConnected()
-          deviceInfo.append("Connected: \(isConnected ? "Yes" : "No")")
-        }
-
-        if options.showRSSI {
-          deviceInfo.append("RSSI: \(device.rawRSSI()) dbm")
-        }
-
-        if options.showPairing {
-          deviceInfo.append("Paired: \(device.isPaired() ? "Yes" : "No")")
-        }
-
-        if options.showIsIncoming {
-          deviceInfo.append("Incoming: \(device.isIncoming() ? "Yes" : "No")")
-        }
+    var pieces = [String]()
+    autoreleasepool {
+      if options.showAddress, let addr = device.addressString {
+        pieces.append("Address: \(addr)")
       }
-
-      output.append(deviceInfo.joined(separator: ", "))
-    } catch {
-      logger.error("Error processing device: \(error.localizedDescription)")
+      if options.showName {
+        let name = device.nameOrAddress ?? "-"
+        pieces.append("Name: \(name)")
+      }
+      if options.showConnected {
+        let c = device.isConnected() ? "Yes" : "No"
+        pieces.append("Connected: \(c)")
+      }
+      if options.showRSSI {
+        pieces.append("RSSI: \(device.rawRSSI()) dbm")
+      }
+      if options.showPairing {
+        let p = device.isPaired() ? "Yes" : "No"
+        pieces.append("Paired: \(p)")
+      }
+      if options.showIsIncoming {
+        let i = device.isIncoming() ? "Yes" : "No"
+        pieces.append("Incoming: \(i)")
+      }
     }
+    print(pieces.joined(separator: ", "))
   }
-
-  return output
 }
