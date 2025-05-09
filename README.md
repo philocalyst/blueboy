@@ -193,7 +193,7 @@ Interact with specific Bluetooth devices using their ID (MAC address or name).
 brew install philocalyst/tap/blueboy
 ```
 
-### Build from Source (Recommended)
+### Build from Source
 
 Follow the [Building](#building) instructions to create a release build:
 ```shell
