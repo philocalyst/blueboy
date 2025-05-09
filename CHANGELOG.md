@@ -6,6 +6,30 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.0.0] – 2025-05-09
+
+### Added
+- Integrate **BlueKit** as an external package dependency (from version 0.6.8) instead of a vendored library.  
+- Annotate all command entry points (`run()` methods in `Device`, `Get`, `List`, `Paired`, `Connected`) with `@MainActor` to enforce structured concurrency.  
+- Execute logging in an isolated context via the updated BlueKit logging subsystem.
+
+### Changed
+- **Package.swift**  
+  - Removed the local `BlueKit` library target.  
+  - Added a remote dependency on `BlueKit` (v0.6.8).  
+  - Updated the `bboy` executable target to depend on the remote `BlueKit` package.  
+- Command implementations  
+  - Dropped explicit logger injection into `DeviceManager` and `BluetoothManager`; commands now rely on `BlueBoyLogger.logger`.  
+  - Instantiated `DeviceManager` and `BluetoothManager` without passing a logger parameter.  
+
+### Removed
+- Deleted internal BlueKit source modules:  
+  - `BluetoothManager.swift`  
+  - `DeviceManager.swift`  
+  - `Errors.swift`  
+  - `Logging.swift`  
+- Removed the obsolete `options.md` documentation file.
+
 ## [0.7.0] - 2025-05-08
 
 ### Added
@@ -98,7 +122,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-[Unreleased]: https://github.com/philocalyst/blueboy/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/philocalyst/blueboy/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/philocalyst/blueboy/compare/v0.6.8...v1.0.0
 [0.7.0]: https://github.com/philocalyst/blueboy/compare/v0.6.8...v0.7.0
 [0.6.8]: https://github.com/philocalyst/blueboy/v0.1.0-alpha...v0.6.8
 [0.1.0-alpha]: https://github.com/philocalyst/blueboy/compare/...v0.1.0-alpha
