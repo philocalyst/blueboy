@@ -9,7 +9,7 @@ struct DeviceCommand: ParsableCommand {
     abstract: "Manage Bluetooth devices"
   )
 
-  @Argument(help: "Device ID (address or name)")
+  @Argument(help: "Device ID address")
   var id: String
 
   @Argument(help: "An action to perform")
@@ -17,7 +17,7 @@ struct DeviceCommand: ParsableCommand {
 
   @Option(
     name: .long,
-    help: "PIN for pairing (only used with `pair` action)"
+    help: "PIN for pairing (exclusive to `pair` action)"
   )
   var pin: String?
 
