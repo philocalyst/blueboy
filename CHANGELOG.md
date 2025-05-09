@@ -6,6 +6,26 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.1.0] – 2025-05-09
+
+### Added
+- Introduce a GitHub Actions release workflow (`.github/workflows/release.yml`) to automate:
+  - Packaging via `just package`
+  - Compression of binaries
+  - Changelog extraction and GitHub Release publishing
+  - Checksum generation and upload
+- Define an `env.BINARY_NAME` for dynamic binary naming in the workflow
+
+### Changed
+- In the release workflow, replace the hard-coded `bboy` with `${{ env.BINARY_NAME }}` in the package step
+- Remove the redundant leading comment from `.github/workflows/release.yml`
+- Revise **README.md** for better grammar, tone and a more engaging project description
+
+### Fixed
+- Correct tar parsing in the `compress-binaries` recipe (justfile):
+  - Use `${file##*/}` and `${file%/*}` for filename and directory extraction
+  - Adjust the `tar -s` substitution to strip version suffixes properly
+
 ## [1.0.0] – 2025-05-09
 
 ### Added
@@ -122,7 +142,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-[Unreleased]: https://github.com/philocalyst/blueboy/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/your_org/BlueBoy/compare/v1.1.0...HEAD
+[1.1.0]:    https://github.com/your_org/BlueBoy/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/philocalyst/blueboy/compare/v0.6.8...v1.0.0
 [0.7.0]: https://github.com/philocalyst/blueboy/compare/v0.6.8...v0.7.0
 [0.6.8]: https://github.com/philocalyst/blueboy/v0.1.0-alpha...v0.6.8
