@@ -1,162 +1,220 @@
+Okay, here's a README for your `bboy` project based on the Swift code provided.
 
-# Blueboy
+```markdown
+# Welcome to BlueBoy
 
-The powerful and feature-rich command-line utility for controlling Bluetooth on macOS. Blueboy provides a comprehensive set of commands for managing Bluetooth devices, connections, and system states directly from your terminal.
+BlueBoy(bboy) is a command-line utility for controlling Bluetooth on macOS. It provides a simple and effective way to manage Bluetooth devices, check system states, and list available, paired, or connected devices directly from your terminal.
 
-## Features
+## Brief Summary
 
-- 🔍 List paired and connected devices
-- 🔄 Connect to and disconnect from devices
-- 🔌 Toggle Bluetooth power and discoverability
-- 📱 Get detailed device information
-- 🔐 Pair with devices (with optional PIN support)
-- ⏱️ Inquire for devices in range with customizable duration
+`bboy` allows users to interact with macOS Bluetooth functionalities such as:
+-   Querying Bluetooth power state.
+-   Listing paired, connected, or discoverable devices.
+-   Getting detailed information about specific devices.
+-   Connecting to, disconnecting from, pairing with, and unpairing devices.
 
-## Installation
-
-<!-- ### Homebrew -->
-
-<!-- ```bash -->
-<!-- brew install blueutil -->
-<!-- ``` -->
-
-### From Source
-
-```bash
-git clone https://github.com/philocalyst/blueutil.git
-cd blueutil
-swift build -c release
-cp .build/release/blueutil /usr/local/bin/
+```console
+$ bboy list paired
+Address: 00-11-22-33-44-55, Name: My Bluetooth Keyboard, Connected: Yes, RSSI: -50 dbm, Incoming: No
+Address: AA-BB-CC-DD-EE-FF, Name: My Bluetooth Mouse, Connected: Yes, RSSI: -65 dbm, Incoming: No
 ```
 
-## Usage
+## Get Started
 
-Blueboy offers several commands through a clean, intuitive interface:
+Get started by following the [installation instructions](#install) below. Once installed, you can explore the available commands and options.
 
-### Device Management
+## Tutorial
 
-```bash
-# Get information about a specific device
-blueutil device 00-11-22-33-44-55 --info
+`bboy` follows a standard command-line structure:
 
-# Connect to a device
-blueutil device 00-11-22-33-44-55 --connect
-
-# Disconnect from a device
-blueutil device 00-11-22-33-44-55 --disconnect
-
-# Pair with a device (with optional PIN)
-blueutil device 00-11-22-33-44-55 --pair --pin 1234
-
-# Unpair a device
-blueutil device 00-11-22-33-44-55 --unpair
-
-
-# Check if a device is connected
-blueutil device 00-11-22-33-44-55 --is-connected
+```shell
+bboy [global-options] <subcommand> [subcommand-options-and-arguments]
 ```
 
-### Listing Devices
+**Global Options:**
+-   `--debug`: Enable debug logging for more detailed output.
+-   `--verbose`: Enable verbose logging (implies debug) for maximum output.
 
-```bash
-# List all paired devices
-blueutil list --paired
+### Core Subcommands:
 
-# List connected devices
-blueutil list --connected
+#### 1. `get`: Get Bluetooth system states
 
-# Search for devices in range (specify duration in seconds)
-blueutil list --inquiry 10
-```
+Used to retrieve system-level Bluetooth information.
 
-### System Controls
+-   **Get Power State**:
+    Check if Bluetooth is currently powered on. Outputs `1` for on, `0` for off.
+    ```shell
+    bboy get --power
+    bboy get -p
+    ```
+    If no specific state is requested, it will prompt you:
+    ```shell
+    $ bboy get
+    No state retrieval specified
+    ```
 
-```bash
-# Set Bluetooth power state
-blueutil set --power on
-blueutil set --power off
-blueutil set --power toggle
+#### 2. `list`: List Bluetooth devices
 
-# Set discoverable state
-blueutil set --discoverable on
-blueutil set --discoverable off
+This command has several sub-subcommands to list different categories of devices. If no sub-subcommand is specified, it defaults to `list paired`.
 
-# Get current power state
-blueutil get --power
+-   **List Paired Devices** (`list paired` - default):
+    Shows all devices that are paired with your Mac.
+    ```shell
+    bboy list
+    bboy list paired
+    ```
+    Output includes Address, Name, Connected status, RSSI, and Incoming status.
 
-# Get discoverable state
-blueutil get --discoverable
-```
+-   **List Connected Devices** (`list connected`):
+    Shows only the devices currently connected to your Mac.
+    ```shell
+    bboy list connected
+    ```
+    Output includes Address, Name, RSSI, Paired status, and Incoming status.
 
-## How It Works
+-   **Inquire Devices in Range** (`list inquiry`):
+    Scans for nearby Bluetooth devices.
+    ```shell
+    bboy list inquiry
+    ```
+    By default, it scans for 10 seconds. You can specify a custom duration:
+    ```shell
+    bboy list inquiry <duration_in_seconds>
+    # Example: Scan for 15 seconds
+    bboy list inquiry 15
+    ```
+    Output includes Address, Name, Connected status, RSSI, Paired status, and Incoming status.
 
-Blueboy leverages macOS CoreBluetooth and IOBluetooth frameworks to provide a comprehensive command-line interface for Bluetooth management. Built with Swift's ArgumentParser, it offers a modern, type-safe command structure with helpful error handling.
+#### 3. `device`: Manage Bluetooth devices
 
-The tool is designed with a modular architecture:
+Interact with specific Bluetooth devices using their ID (MAC address or name).
 
-1. **Command Structure** - Clean subcommand organization for intuitive usage
-2. **Device Management** - Robust device lookup and connection handling
-3. **Error Handling** - Descriptive error messages for troubleshooting
-4. **Logging** - Integrated logging for development and debugging
+-   **Device Actions**:
+    The `device` command takes a device ID and an action to perform.
 
-## Examples
+    -   `info`: Show detailed information for a device.
+        ```shell
+        bboy device <device_id> info
+        # Example: bboy device 00-11-22-33-44-55 info
+        # Example: bboy device "My Bluetooth Keyboard" info
+        ```
 
-### Managing a Bluetooth Headset
+    -   `is-connected`: Check if a specific device is connected. Outputs `1` for connected, `0` for not connected.
+        ```shell
+        bboy device <device_id> is-connected
+        ```
 
-```bash
-# Connect to headphones
-blueutil device "My Headphones" --connect
+    -   `connect`: Connect to a device.
+        ```shell
+        bboy device <device_id> connect
+        ```
 
-# Check connection status
-blueutil device "My Headphones" --is-connected
+    -   `disconnect`: Disconnect from a device.
+        ```shell
+        bboy device <device_id> disconnect
+        ```
 
-# Disconnect when done
-blueutil device "My Headphones" --disconnect
-```
+    -   `pair`: Pair with a device. A PIN may be required for some devices.
+        ```shell
+        bboy device <device_id> pair
+        bboy device <device_id> pair --pin <your_pin>
+        ```
 
-### Finding New Devices
+    -   `unpair`: Unpair a device.
+        ```shell
+        bboy device <device_id> unpair
+        ```
 
-```bash
-# Search for devices in range for 30 seconds
-blueutil list --inquiry 30
+**Example Workflow:**
 
-# Pair with a new device
-blueutil device 00-11-22-33-44-55 --pair
-```
+1.  List paired devices:
+    ```shell
+    bboy list paired
+    ```
+    *(Identify the device ID, e.g., `AA-BB-CC-DD-EE-FF`)*
 
-### System Automation
+2.  Check if it's connected:
+    ```shell
+    bboy device AA-BB-CC-DD-EE-FF is-connected
+    ```
 
-```bash
-# Toggle Bluetooth power
-blueutil set --power toggle
+3.  If not connected, connect to it:
+    ```shell
+    bboy device AA-BB-CC-DD-EE-FF connect
+    ```
 
-# Check if Bluetooth is enabled
-if [ $(blueutil get --power) -eq 1 ]; then
-    echo "Bluetooth is enabled"
-else
-    echo "Bluetooth is disabled"
-fi
-```
+## Design Philosophy
 
-## Contributing
+`bboy` aims to be:
+-   **Focused**: A dedicated utility for macOS Bluetooth control.
+-   **Intuitive**: Leveraging `ArgumentParser` for a clear and standard CLI experience.
+-   **Effective**: Providing direct access to common Bluetooth operations.
+-   **Informative**: Offering useful feedback and logging options for troubleshooting.
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+## Building and Debugging
 
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add some amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+### Building
 
-## Acknowledgments
+1.  Ensure you have Xcode Command Line Tools installed.
+2.  Clone the repository (if applicable) or navigate to the project directory.
+3.  Build the project using Swift Package Manager:
+    -   For a debug build:
+        ```shell
+        swift build
+        ```
+        The executable will be located at `.build/debug/bboy`.
+    -   For a release build:
+        ```shell
+        swift build -c release
+        ```
+        The executable will be located at `.build/release/bboy`.
 
-Blueboy builds on the foundations laid by earlier Bluetooth utilities for macOS and is inspired by the need for comprehensive command-line control of Bluetooth devices.
-Very large thanks to Toy and [blueutil](https://github.com/toy/blueutil)
+### Debugging
+
+`bboy` includes logging flags to help with debugging:
+-   `--debug`: Enables general debug messages.
+    ```shell
+    bboy --debug list paired
+    ```
+-   `--verbose`: Enables more detailed verbose messages (implies debug).
+    ```shell
+    bboy --verbose device <device_id> connect
+    ```
+    Logs are managed by `bboyLogger` and will be printed to standard error/output.
+
+## Install
+
+1.  **Build from Source (Recommended)**:
+    Follow the [Building](#building) instructions to create a release build:
+    ```shell
+    swift build -c release
+    ```
+    Then, copy the executable to a directory in your `PATH`, for example `/usr/local/bin`:
+    ```shell
+    sudo cp .build/release/bboy /usr/local/bin/
+    ```
+    Ensure `/usr/local/bin` is in your shell's `PATH` environment variable.
+
+2.  **Homebrew (Future Possibility)**:
+
+## Changelog
+
+For a detailed list of changes, please see the [CHANGELOG.md](CHANGELOG.md) file.
+
+## Libraries Used
+
+-   [**swift-argument-parser**](https://github.com/apple/swift-argument-parser): For parsing command-line arguments.
+-   [**swift-log**](https://github.com/apple/swift-log): A Logging API for Swift.
+-   **BlueKit**: A custom internal library/module for handling Bluetooth interactions (Local only for now, working on uploading...).
+-   **Foundation**: Standard Apple framework.
+-   **IOBluetooth**: Standard macOS framework for Bluetooth communication.
+
+## Acknowledgements
+
+-   This tool builds upon the capabilities provided by Apple's CoreBluetooth and IOBluetooth frameworks.
+-   Thanks to the Swift community for excellent tools and libraries (YAH).
 
 ## License
 
-[MIT](LICENSE)
-
----
-
-Created under duress by Miles ;)
+This project is licensed under the [MIT] - see the [LICENSE](LICENSE) file for details. 
+```
