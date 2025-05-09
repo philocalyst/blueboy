@@ -61,67 +61,12 @@ public class DeviceManager {
     }
   }
 
-  /// List devices with specified print options
-  /// - Parameters:
-  ///   - devices: Array of IOBluetoothDevice instances
-  ///   - options: DevicePrintOptions defining what information to show
-  public func listDevices(_ devices: [IOBluetoothDevice], options: DevicePrintOptions) -> [String] {
-    logger.debug("Listing \(devices.count) devices")
-
-    var output = [String]()
-
-    if devices.isEmpty {
-      output.append("No devices found.")
-      return output
-    }
-
-    for device in devices {
-      do {
-        var deviceInfo = [String]()
-
-        try autoreleasepool {
-          if options.showAddress, let addressString = device.addressString {
-            deviceInfo.append("Address: \(addressString)")
-          }
-
-          if options.showName {
-            let nameOrAddress = device.nameOrAddress ?? "-"
-            deviceInfo.append("Name: \(nameOrAddress)")
-          }
-
-          if options.showConnected {
-            let isConnected = device.isConnected()
-            deviceInfo.append("Connected: \(isConnected ? "Yes" : "No")")
-          }
-
-          if options.showRSSI {
-            deviceInfo.append("RSSI: \(device.rawRSSI()) dbm")
-          }
-
-          if options.showPairing {
-            deviceInfo.append("Paired: \(device.isPaired() ? "Yes" : "No")")
-          }
-
-          if options.showIsIncoming {
-            deviceInfo.append("Incoming: \(device.isIncoming() ? "Yes" : "No")")
-          }
-        }
-
-        output.append(deviceInfo.joined(separator: ", "))
-      } catch {
-        logger.error("Error processing device: \(error.localizedDescription)")
-      }
-    }
-
-    return output
-  }
-
   /// Get devices in range through Bluetooth inquiry
-  /// - Parameter duration: Duration in seconds to scan for devices
+  /// - Parameter timeout: Duration in seconds to scan for devices
   /// - Returns: Array of discovered devices
   /// - Throws: BluetoothError if inquiry fails
-  public func getDevicesInRange(duration: Double) throws -> [IOBluetoothDevice] {
-    logger.debug("Starting device inquiry for \(duration) seconds")
+  public func getDevicesInRange(timeout: Double) throws -> [IOBluetoothDevice] {
+    logger.debug("Starting device inquiry for \(timeout) seconds")
 
     return try autoreleasepool {
       // ▰▰▰ Inquiry Delegate ▰▰▰ //
@@ -153,7 +98,7 @@ public class DeviceManager {
       }
 
       // inquiryLength is UInt8
-      inquirer.inquiryLength = UInt8(duration)
+      inquirer.inquiryLength = UInt8(timeout)
       inquirer.updateNewDeviceNames = true
 
       let startResult = inquirer.start()
@@ -162,9 +107,9 @@ public class DeviceManager {
         throw BluetoothError.operationFailed("Inquiry start failed")
       }
 
-      logger.debug("Inquiry started; will time out in \(duration)s")
+      logger.debug("Inquiry started; will time out in \(timeout)s")
       let timer = Timer.scheduledTimer(
-        withTimeInterval: duration, repeats: false
+        withTimeInterval: timeout, repeats: false
       ) { [weak inquirer] _ in
         self.logger.debug("Inquiry timeout reached")
         inquirer?.stop()
