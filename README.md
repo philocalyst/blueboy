@@ -187,7 +187,14 @@ Interact with specific Bluetooth devices using their ID (MAC address or name).
 
 ## Install
 
-1.  **Build from Source (Recommended)**:
+### Install from Homebrew
+
+```shell
+brew install philocalyst/tap/blueboy
+```
+
+### Build from Source (Recommended)
+
     Follow the [Building](#building) instructions to create a release build:
     ```shell
     swift build -c release
@@ -197,8 +204,6 @@ Interact with specific Bluetooth devices using their ID (MAC address or name).
     sudo cp .build/release/bboy /usr/local/bin/
     ```
     Ensure `/usr/local/bin` is in your shell's `PATH` environment variable.
-
-2.  **Homebrew (Future Possibility)**:
 
 ## Changelog
 
