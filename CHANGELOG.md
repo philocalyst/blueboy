@@ -6,6 +6,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.1.1] – 2025-05-09
+
+### Fixed
+Changed DeviceCommand argument help from "Device ID (address or name)" to "Device ID address"
+Changed DeviceCommand option help from "PIN for pairing (only used with pair action)" to "PIN for pairing (exclusive to pair action)"
+
 ## [1.1.0] – 2025-05-09
 
 ### Added
@@ -142,9 +148,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-[Unreleased]: https://github.com/your_org/BlueBoy/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/your_org/BlueBoy/compare/v1.1.1...HEAD
+[1.1.1]:    https://github.com/your_org/BlueBoy/compare/v1.1.0...v1.1.1
 [1.1.0]:    https://github.com/your_org/BlueBoy/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/philocalyst/blueboy/compare/v0.6.8...v1.0.0
+[1.0.0]: https://github.com/philocalyst/blueboy/compare/v0.7.0...v1.0.0
 [0.7.0]: https://github.com/philocalyst/blueboy/compare/v0.6.8...v0.7.0
 [0.6.8]: https://github.com/philocalyst/blueboy/v0.1.0-alpha...v0.6.8
 [0.1.0-alpha]: https://github.com/philocalyst/blueboy/compare/...v0.1.0-alpha
