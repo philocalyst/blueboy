@@ -1,6 +1,48 @@
 import ArgumentParser
-import CoreBluetooth
-import Foundation
+import IOBluetooth
+import Logging
+
+public func printDevices(
+  _ devices: [IOBluetoothDevice],
+  with options: DevicePrintOptions
+) {
+  let logger = BlueBoyLogger.logger
+  logger.debug("Listing \(devices.count) devices")
+
+  guard !devices.isEmpty else {
+    print("No devices found.")
+    return
+  }
+
+  for device in devices {
+    var pieces = [String]()
+    autoreleasepool {
+      if options.showAddress, let addr = device.addressString {
+        pieces.append("Address: \(addr)")
+      }
+      if options.showName {
+        let name = device.nameOrAddress ?? "-"
+        pieces.append("Name: \(name)")
+      }
+      if options.showConnected {
+        let c = device.isConnected() ? "Yes" : "No"
+        pieces.append("Connected: \(c)")
+      }
+      if options.showRSSI {
+        pieces.append("RSSI: \(device.rawRSSI()) dbm")
+      }
+      if options.showPairing {
+        let p = device.isPaired() ? "Yes" : "No"
+        pieces.append("Paired: \(p)")
+      }
+      if options.showIsIncoming {
+        let i = device.isIncoming() ? "Yes" : "No"
+        pieces.append("Incoming: \(i)")
+      }
+    }
+    print(pieces.joined(separator: ", "))
+  }
+}
 
 /// ▰▰▰ Bluetooth state representation ▰▰▰
 public enum State: String, CaseIterable, ExpressibleByArgument {
