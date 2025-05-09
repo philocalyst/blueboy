@@ -195,15 +195,15 @@ brew install philocalyst/tap/blueboy
 
 ### Build from Source (Recommended)
 
-    Follow the [Building](#building) instructions to create a release build:
-    ```shell
-    swift build -c release
-    ```
-    Then, copy the executable to a directory in your `PATH`, for example `/usr/local/bin`:
-    ```shell
-    sudo cp .build/release/bboy /usr/local/bin/
-    ```
-    Ensure `/usr/local/bin` is in your shell's `PATH` environment variable.
+Follow the [Building](#building) instructions to create a release build:
+```shell
+swift build -c release
+```
+Then, copy the executable to a directory in your `PATH`, for example `/usr/local/bin`:
+```shell
+sudo cp .build/release/bboy /usr/local/bin/
+```
+Ensure `/usr/local/bin` is in your shell's `PATH` environment variable.
 
 ## Changelog
 
