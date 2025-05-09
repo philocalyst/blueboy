@@ -2,8 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
@@ -39,7 +38,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the placeholder `getDiscoverableState()` method from `BlueKit.BluetoothManager` as it was not fully implemented and determined to be faulty.
 - Consequently, removed the `--discoverable` option from the `get` command.
 
+## [0.1.0-alpha] - 2025-05-08
+
+### Added
+-   Initial command-line tool `Blueboy` for macOS Bluetooth management, built with Swift and ArgumentParser.
+-   **`device` command:**
+    -   Display detailed information for a specific device (`--info ID`).
+    -   Check connection status of a device (`--is-connected ID`).
+    -   Connect to a device (`--connect ID`).
+    -   Disconnect from a device (`--disconnect ID`).
+    -   Pair with a device, including optional PIN support (`--pair ID [PIN]`).
+    -   Unpair a device (`--unpair ID`).
+-   **`list` command:**
+    -   List currently paired devices (`--paired`).
+    -   List currently connected devices (`--connected`).
+    -   Discover devices in range via Bluetooth inquiry (`--inquiry [duration]`).
+    -   Internal `DevicePrintOptions` for controlling the verbosity of listed device details.
+-   **`get` command:**
+    -   Retrieve the current Bluetooth power state (on/off) (`--power`).
+    -   Retrieve the current Bluetooth discoverable state (`--discoverable`).
+-   Basic error handling using a custom `BluetoothError` enum.
+-   Support for debug (`--debug`) and verbose (`--verbose`) logging via `swift-log`.
+-   Initial `Package.swift` defining the project and its dependencies.
+-   Documentation including a `README.md` and an `options.md` file detailing command-line usage.
+
+### Changed
+-   The experimental `set` command (for modifying power/discoverable state) evolved from using individual flags for states to accepting positional arguments for operation and state (e.g., `set power on`), before being deactivated.
+-   Refined device identification logic (`getDevice`) to support lookup by both MAC address and device name from paired devices.
+-   Iterative improvements to logging messages, error handling, and the robustness of device inquiry and pairing processes.
+
+### Removed
+-   `--favorites` and `--recent` options from the `list` command, and corresponding `--add-favorite`/`--remove-favorite` options from the `device` command. These were removed due to underlying API changes and deprecations in macOS 12+.
+-   A global `--format` option for CLI output was explored and then removed.
+-   The `set` command, while developed, was deactivated from the main list of available subcommands.
+-   An experimental `wait` command (for waiting on device connection or disconnection states) was developed but not included as an active feature.
+
 ---
 
-[Unreleased]: https://example.com/your-project/compare/v0.6.8...HEAD
-[0.6.8]: https://example.com/your-project/compare/...v0.6.8
+[Unreleased]: https://github.com/philocalyst/blueboy/compare/v0.6.8...HEAD
+[0.6.8]: https://github.com/philocalyst/blueboy/v0.1.0-alpha...v0.6.8
+[0.1.0-alpha]: https://github.com/philocalyst/blueboy/compare/...v0.1.0-alpha
