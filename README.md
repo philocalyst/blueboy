@@ -1,6 +1,3 @@
-Okay, here's a README for your `bboy` project based on the Swift code provided.
-
-```markdown
 # Welcome to BlueBoy
 
 BlueBoy(bboy) is a command-line utility for controlling Bluetooth on macOS. It provides a simple and effective way to manage Bluetooth devices, check system states, and list available, paired, or connected devices directly from your terminal.
@@ -217,4 +214,3 @@ For a detailed list of changes, please see the [CHANGELOG.md](CHANGELOG.md) file
 ## License
 
 This project is licensed under the [MIT] - see the [LICENSE](LICENSE) file for details. 
-```
