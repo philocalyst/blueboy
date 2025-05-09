@@ -9,18 +9,17 @@ struct ListCommand: ParsableCommand {
     commandName: "list",
     abstract: "List Bluetooth devices",
     subcommands: [
-      Inquiry.self,
+      InRange.self,
       Paired.self,
       Connected.self,
-    ],
-    defaultSubcommand: Paired.self
+    ]
   )
 }
 
-struct Inquiry: ParsableCommand {
+struct InRange: ParsableCommand {
   static let configuration = CommandConfiguration(
-    commandName: "inquiry",
-    abstract: "Inquiry devices in range"
+    commandName: "in-range",
+    abstract: "Inquire devices in range"
   )
 
   @Argument(
