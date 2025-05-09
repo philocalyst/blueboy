@@ -213,7 +213,7 @@ For a detailed list of changes, please see the [CHANGELOG.md](CHANGELOG.md) file
 
 -   [**swift-argument-parser**](https://github.com/apple/swift-argument-parser): For parsing command-line arguments.
 -   [**swift-log**](https://github.com/apple/swift-log): A Logging API for Swift.
--   **BlueKit**: A custom internal library/module for handling Bluetooth interactions (Local only for now, working on uploading...).
+-   [**BlueKit**](https://github.com/philocalyst/BlueKit):A library for handling bluetooth interactions.
 -   **Foundation**: Standard Apple framework.
 -   **IOBluetooth**: Standard macOS framework for Bluetooth communication.
 
