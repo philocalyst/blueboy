@@ -84,7 +84,7 @@ private func defaultPrintOptions() -> DevicePrintOptions {
   )
 }
 
-private func printDevices(
+public func printDevices(
   _ devices: [IOBluetoothDevice],
   with options: DevicePrintOptions
 ) {

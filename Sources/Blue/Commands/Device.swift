@@ -54,8 +54,7 @@ struct DeviceCommand: ParsableCommand {
     BlueUtilLogger.logger.info("Showing info for \(id)")
     let device = try mgr.getDevice(identifier: id)
     print("Device Information:")
-    listDevices([device], options: .all)
-      .forEach { print($0) }
+    printDevices([device], with: .all)
   }
 
   private func checkConnected(_ mgr: DeviceManager) throws {
