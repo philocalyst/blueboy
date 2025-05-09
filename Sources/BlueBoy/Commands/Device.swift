@@ -31,7 +31,7 @@ struct DeviceCommand: ParsableCommand {
   }
 
   func run() throws {
-    let logger = BlueUtilLogger.logger
+    let logger = BlueBoyLogger.logger
     let mgr = DeviceManager(logger: logger)
 
     switch action {
@@ -51,7 +51,7 @@ struct DeviceCommand: ParsableCommand {
   }
 
   private func showInfo(_ mgr: DeviceManager) throws {
-    BlueUtilLogger.logger.info("Showing info for \(id)")
+    BlueBoyLogger.logger.info("Showing info for \(id)")
     let device = try mgr.getDevice(identifier: id)
     print("Device Information:")
     printDevices([device], with: .all)

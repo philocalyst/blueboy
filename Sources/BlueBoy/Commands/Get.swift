@@ -22,7 +22,7 @@ struct Power: ParsableCommand {
   )
 
   func run() throws {
-    let logger = BlueUtilLogger.logger
+    let logger = BlueBoyLogger.logger
     let manager = BluetoothManager(logger: logger)
 
     logger.info("Retrieving power state")

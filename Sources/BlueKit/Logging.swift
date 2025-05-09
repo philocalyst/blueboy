@@ -1,10 +1,10 @@
 import Foundation
 import Logging
 
-/// Central logging configuration for BlueUtil
-public enum BlueUtilLogger {
+/// Central logging configuration for BlueKit
+public enum BlueKitLogger {
   /// Shared logger instance
-  public static var logger = Logger(label: "com.blueutil")
+  public static var logger = Logger(label: "com.philocalyst.bluekit")
 
   /// Configure logging level based on debug/verbose flags
   /// - Parameters:

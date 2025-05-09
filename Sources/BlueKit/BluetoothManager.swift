@@ -8,7 +8,7 @@ public class BluetoothManager {
 
   /// Initialize with optional custom logger
   /// - Parameter logger: Logger instance to use
-  public init(logger: Logger = BlueUtilLogger.logger) {
+  public init(logger: Logger = BlueKitLogger.logger) {
     self.logger = logger
   }
 

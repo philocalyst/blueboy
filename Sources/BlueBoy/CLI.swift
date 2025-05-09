@@ -25,6 +25,6 @@ struct RootCommand: ParsableCommand {
 
   func run() throws {
     // Configure logging based on debug/verbose flags
-    BlueUtilLogger.configure(debug: debug, verbose: verbose)
+    BlueBoyLogger.configure(debug: debug, verbose: verbose)
   }
 }
