@@ -24,17 +24,17 @@ public class BluetoothManager {
     return Int(raw)
   }
 
-  /// Get the discoverable state of Bluetooth
-  /// - Returns: Discoverable state as Boolean
-  /// - Throws: BluetoothError if unable to get discoverable state
-  public func getDiscoverableState() throws -> Bool {
-    logger.info("Getting discoverable state")
+  // /// Get the discoverable state of Bluetooth
+  // /// - Returns: Discoverable state as Boolean
+  // /// - Throws: BluetoothError if unable to get discoverable state
+  // public func getDiscoverableState() throws -> Bool {
+  //   logger.info("Getting discoverable state")
 
-    // Note: This is a placeholder as the original code didn't have
-    // a real implementation. In a real implementation, we would
-    // use the appropriate IOBluetooth API to get this state.
-    return true
-  }
+  //
+  //
+  //   // TODO: Implement this once and for all!
+  //   return true
+  // }
 
   /// Get all paired devices
   /// - Returns: Array of paired IOBluetoothDevice objects
