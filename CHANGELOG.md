@@ -6,6 +6,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.7.0] - 2025-05-08
+
+### Added
+- Introduced a `Justfile` to streamline common development tasks. This includes recipes for building (debug and release), packaging binaries, compressing releases, generating checksums, creating release notes from the changelog, running the application, cleaning build artifacts, local installation, and updating Swift package dependencies.
+- Implemented `BlueBoyLogger`, a dedicated logging mechanism utilizing `swift-log` for the `bboy` executable, enhancing debuggability and providing `--debug` and `--verbose` options.
+
+### Changed
+- Standardized logger usage across the project: `BlueBoyLogger` is now used within the `bboy` executable, and `BlueKitLogger` is used within the `BlueKit` library, replacing previous `BlueUtilLogger` references.
+- Relocated `Models.swift` (which includes the `printDevices` function) from the `BlueKit` library target to the `BlueBoy` executable target. The `printDevices` function was also updated to utilize `IOBluetoothDevice` and the new `BlueBoyLogger`.
+- Simplified the default output for `list` subcommands by using a basic set of `DevicePrintOptions`.
+- Renamed the main executable product from `BlueBoy` to `bboy` in `Package.swift` for brevity and to match common command-line utility naming.
+- Significantly revised and improved `README.md`:
+    - Updated the project description and added a note on feature-parity with the original `blueutil` and an invitation for contributions.
+    - Provided more comprehensive usage examples, clearer build instructions, and details on the design philosophy.
+- Refined the command-line interface structure for better clarity and consistency with `swift-argument-parser` conventions:
+    - The `get` command now uses `power` as a subcommand (e.g., `bboy get power`) instead of relying on a flag (`get --power`).
+    - The `list inquiry` subcommand has been renamed to `list in-range` (e.g., `bboy list in-range`).
+
+### Fixed
+- Corrected command invocation examples and API descriptions in `README.md` to accurately reflect the updated CLI structure (e.g., usage of `get power` and `list in-range`).
+- Removed placeholder/template text from `README.md` and improved overall accuracy of the documentation.
+
+
 ## [0.6.8] - 2025-05-08
 
 ### Added
@@ -75,6 +98,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-[Unreleased]: https://github.com/philocalyst/blueboy/compare/v0.6.8...HEAD
+[Unreleased]: https://github.com/philocalyst/blueboy/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/philocalyst/blueboy/compare/v0.6.8...v0.7.0
 [0.6.8]: https://github.com/philocalyst/blueboy/v0.1.0-alpha...v0.6.8
 [0.1.0-alpha]: https://github.com/philocalyst/blueboy/compare/...v0.1.0-alpha
