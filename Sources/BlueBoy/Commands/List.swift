@@ -27,9 +27,10 @@ struct InRange: ParsableCommand {
   )
   var duration: Int?
 
+  @MainActor
   func run() throws {
     let logger = BlueBoyLogger.logger
-    let deviceManager = DeviceManager(logger: logger)
+    let deviceManager = DeviceManager()
     let timeout = Double(duration ?? 10)
     logger.info("Inquiring for \(timeout) seconds")
     let devices = try deviceManager.getDevicesInRange(timeout: timeout)
@@ -44,9 +45,10 @@ struct Paired: ParsableCommand {
     abstract: "List paired devices"
   )
 
+  @MainActor
   func run() throws {
     let logger = BlueBoyLogger.logger
-    let bt = BluetoothManager(logger: logger)
+    let bt = BluetoothManager()
     logger.info("Listing paired devices")
     let devices = bt.getPairedDevices()
     var opts = DevicePrintOptions.basic
@@ -61,9 +63,10 @@ struct Connected: ParsableCommand {
     abstract: "List connected devices"
   )
 
+  @MainActor
   func run() throws {
     let logger = BlueBoyLogger.logger
-    let bt = BluetoothManager(logger: logger)
+    let bt = BluetoothManager()
     logger.info("Listing connected devices")
     let devices = bt.getConnectedDevices()
     var opts = DevicePrintOptions.basic

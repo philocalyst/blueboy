@@ -30,6 +30,7 @@ struct DeviceCommand: ParsableCommand {
     case unpair
   }
 
+  @MainActor
   func run() throws {
     let logger = BlueBoyLogger.logger
     let mgr = DeviceManager(logger: logger)

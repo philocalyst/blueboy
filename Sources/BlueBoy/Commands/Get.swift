@@ -21,6 +21,7 @@ struct Power: ParsableCommand {
     abstract: "Output power status as 1 or 0"
   )
 
+  @MainActor
   func run() throws {
     let logger = BlueBoyLogger.logger
     let manager = BluetoothManager(logger: logger)
