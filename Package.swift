@@ -11,7 +11,7 @@ let package = Package(
       name: "BlueKit",
       targets: ["BlueKit"]),
     .executable(
-      name: "BlueBoy",
+      name: "bboy",
       targets: ["BlueBoy"]),
   ],
   dependencies: [
